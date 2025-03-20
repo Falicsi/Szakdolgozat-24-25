@@ -4,17 +4,18 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NavbarComponent } from '../../navbar/navbar.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, NavbarComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
 
 export class RegisterComponent {
-
+  username: string = '';
   email: string = '';
   password: string = '';
   confirmPassword: string = '';
@@ -28,7 +29,7 @@ export class RegisterComponent {
       return;
     }
 
-    this.authService.register(this.email, this.password).subscribe(
+    this.authService.register(this.username, this.email, this.password).subscribe(
       (response) => {
         this.router.navigate(['/login']);
       },

@@ -11,7 +11,7 @@ $input-hover-color: #f1f3f4;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: calc(100vh - 68px);
   background-color: $secondary-color;
 
   h2 {

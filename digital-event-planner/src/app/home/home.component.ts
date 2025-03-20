@@ -3,12 +3,13 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { CalendarComponent } from '../calendar/calendar.component';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [CommonModule, CalendarComponent]
+  imports: [CommonModule, CalendarComponent, NavbarComponent]
 })
 export class HomeComponent implements OnInit {
   isAuthenticated: boolean = false;
