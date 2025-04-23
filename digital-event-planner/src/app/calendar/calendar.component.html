@@ -1,31 +1,39 @@
-<div class="calendar-container">
-    <h2>Event Calendar</h2>
-  
-    <div class="calendar">
-      <div class="month">
-        <button class="prev">&#10094;</button>
-        <h3>February 2025</h3>
-        <button class="next">&#10095;</button>
-      </div>
-  
-      <div class="days">
-        <div class="day">Sun</div>
-        <div class="day">Mon</div>
-        <div class="day">Tue</div>
-        <div class="day">Wed</div>
-        <div class="day">Thu</div>
-        <div class="day">Fri</div>
-        <div class="day">Sat</div>
-  
-        <div *ngFor="let day of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28]" class="day-item">
-          <div>{{ day }}</div>
-          <div *ngFor="let event of getEventsForDay(day)">
-            <span class="event">{{ event.title }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <button class="add-event" (click)="addEvent()">Add Event</button>
+<div class="calendar-header">
+  <button (click)="goToPrevious()">←</button>
+  <button (click)="goToToday()">Ma</button>
+  <button (click)="goToNext()">→</button>
+
+  <span class="current-view">
+    {{ headerTitle }}
+  </span>
+
+  <div class="view-toggle">
+    <button (click)="view = CalendarView.Month">Hónap</button>
+    <button (click)="view = CalendarView.Week">Hét</button>
+    <button (click)="view = CalendarView.Day">Nap</button>
   </div>
-  
+</div>
+
+
+<div class="calendar-wrapper">
+  <mwl-calendar-month-view
+    *ngIf="view === CalendarView.Month"
+    [viewDate]="viewDate"
+    [events]="events"
+    (dayClicked)="onDayClick($event.day.date)"
+  ></mwl-calendar-month-view>
+
+  <mwl-calendar-week-view
+    *ngIf="view === CalendarView.Week"
+    [viewDate]="viewDate"
+    [events]="events"
+    (hourSegmentClicked)="onTimeSlotClick($event.date)"
+  ></mwl-calendar-week-view>
+
+  <mwl-calendar-day-view
+    *ngIf="view === CalendarView.Day"
+    [viewDate]="viewDate"
+    [events]="events"
+    (hourSegmentClicked)="onTimeSlotClick($event.date)"
+  ></mwl-calendar-day-view>
+</div>

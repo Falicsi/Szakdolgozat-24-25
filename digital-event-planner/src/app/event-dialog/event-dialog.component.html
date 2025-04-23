@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Új esemény</h2>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Cím</mat-label>
+    <input matInput formControlName="title" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Kezdés</mat-label>
+    <input matInput type="datetime-local" formControlName="start" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Befejezés</mat-label>
+    <input matInput type="datetime-local" formControlName="end" />
+  </mat-form-field>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="dialogRef.close()">Mégse</button>
+    <button mat-flat-button color="primary" [disabled]="form.invalid">Mentés</button>
+  </div>
+</form>
