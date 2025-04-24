@@ -33,5 +33,9 @@ export const APP_ROUTES: Routes = [
       { path: 'events', component: EventListComponent }
     ]
   },
+  {
+    path: 'invited-events',
+    loadComponent: () => import('./invited-events/invited-events.component').then(m => m.InvitedEventsComponent)
+  },
   { path: '**', redirectTo: '/home' }
 ];

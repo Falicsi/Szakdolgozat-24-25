@@ -1,0 +1,11 @@
+<h2>Meghívott eseményeim</h2>
+<mat-list>
+  <mat-list-item *ngFor="let event of invitedEvents" (click)="openDetails(event)" style="cursor:pointer;">
+    <div>
+      <strong>{{ event.title }}</strong>
+      <div>{{ event.start | date:'short' }} – {{ event.end | date:'short' }}</div>
+      <div>Létrehozó: {{ event.createdBy }}</div>
+    </div>
+  </mat-list-item>
+</mat-list>
+<div *ngIf="!invitedEvents.length" style="margin-top:2rem;">Nincs meghívásod eseményre.</div>

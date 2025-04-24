@@ -1,3 +1,17 @@
+<h2 mat-dialog-title>Esemény részletei</h2>
+<mat-dialog-content>
+  <p><strong>Cím:</strong> {{ data.title }}</p>
+  <p><strong>Leírás:</strong> {{ data.meta.description }}</p>
+  <p><strong>Kezdés:</strong> {{ data.start | date:'full' }}</p>
+  <p><strong>Befejezés:</strong> {{ data.end | date:'full' }}</p>
+  <p><strong>Létrehozó:</strong> {{ data.meta.createdBy }}</p>
+  <p><strong>Meghívottak:</strong></p>
+  <mat-list>
+    <mat-list-item *ngFor="let u of data.meta.invitedUsers">
+      {{ u }}
+    </mat-list-item>
+  </mat-list>
+</mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">Bezár</button>
   <button mat-button color="primary" *ngIf="data.isOwner" (click)="edit()">Szerkesztés</button>

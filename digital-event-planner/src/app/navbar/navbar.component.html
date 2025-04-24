@@ -1,10 +1,19 @@
 <nav class="navbar">
-    <div class="navbar-container">
-      <a routerLink="/home" class="logo">Digital Event Planner App</a>
-      <div class="navbar-links">
-        <a href="/home">Home</a>
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
-      </div>
+  <div class="navbar-content">
+    <a href="/home" class="logo">
+      <mat-icon class="logo-icon">event</mat-icon>
+      <span>Digital Event Planner</span>
+    </a>
+    <div class="navbar-links">
+      <a href="/home">Home</a>
+      <a href="/invited-events">Eseményeim</a>
     </div>
-  </nav>
+    <div class="navbar-actions">
+      <a href="/login" class="action-link">Bejelentkezés</a>
+      <a href="/register" class="action-link">Regisztráció</a>
+      <button class="theme-switch" (click)="toggleTheme()" title="Téma váltás">
+        <mat-icon>{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+</nav>

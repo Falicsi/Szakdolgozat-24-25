@@ -1,5 +1,5 @@
 <div class="home-layout">
-  <!-- 1. Fixed header -->
+  <!-- 1. Fix header -->
   <header class="header">
     <app-navbar></app-navbar>
   </header>
@@ -9,15 +9,14 @@
     <!-- bal oldali sidebar a profilnak -->
     <aside class="sidebar">
       <div *ngIf="isAuthenticated">
-        <p>You're logged in. Explore our platform.</p>
         <mat-icon>account_circle</mat-icon>
         <div class="user-email">{{ email }}</div>
         <div class="user-username">{{ username }}</div>
-        <button class="logout-button" (click)="logout()">Logout</button>
+        <button class="logout-button" (click)="logout()">Kijelentkezés</button>
       </div>
     </aside>
 
-    <!-- fő tartalom: welcome + naptár + logout gomb -->
+    <!-- fő tartalom: naptár -->
     <main class="main-area">
       <div *ngIf="isAuthenticated; else loginForm">
         <div class="home-container">
@@ -25,8 +24,8 @@
         </div>
       </div>
       <ng-template #loginForm>
-        <h1>Please log in to access the homepage</h1>
-        <p><a routerLink="/login">Login</a> or <a routerLink="/register">Register</a></p>
+        <h2>Üdvözlünk!</h2>
+        <p>Kérlek, jelentkezz be a folytatáshoz.</p>
       </ng-template>
     </main>
   </div>

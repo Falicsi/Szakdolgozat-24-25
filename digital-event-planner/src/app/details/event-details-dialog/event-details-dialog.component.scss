@@ -1,0 +1,41 @@
+:host {
+  font-family: 'Roboto', sans-serif;
+}
+
+mat-dialog-content {
+  background: var(--surface);
+  color: var(--text);
+  padding: 1.5rem;
+  border-radius: 12px 12px 0 0;
+}
+
+mat-dialog-content p {
+  margin: 0.5rem 0;
+}
+
+mat-list {
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+  max-height: 150px;
+  overflow: auto;
+}
+
+mat-list-item {
+  border-bottom: 1px solid var(--border);
+  &:hover {
+    background: var(--hover);
+  }
+}
+
+mat-dialog-actions {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  background: var(--surface);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}

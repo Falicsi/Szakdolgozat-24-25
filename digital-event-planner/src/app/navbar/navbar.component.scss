@@ -1,39 +1,102 @@
-  /* Navbar */
-  .navbar {
-    background-color: #343a40;
-    padding: 15px 0;
-  }
-  
-  .navbar-container {
-    max-width: 1200px;
+:root {
+  --navbar-bg: #222;
+  --navbar-bg-dark: #181818;
+  --navbar-text: #fff;
+  --navbar-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+[data-theme="dark"] {
+  --navbar-bg: #181818;
+  --navbar-bg-dark: #101010;
+  --navbar-text: #fff;
+}
+
+.navbar {
+  background: var(--navbar-bg);
+  color: var(--navbar-text);
+  box-shadow: var(--navbar-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+
+  .navbar-content {
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    justify-content: space-between;
+    padding: 0 2rem;
   }
-  
-  .navbar .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffffff;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--navbar-text);
     text-decoration: none;
+    letter-spacing: 0.5px;
+
+    .logo-icon {
+      font-size: 2rem;
+      color: var(--primary, #1976d2);
+    }
   }
-  
+
   .navbar-links {
     display: flex;
-    gap: 20px;
+    gap: 1.5rem;
+
+    a {
+      color: var(--navbar-text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+      &:hover {
+        background: rgba(255,255,255,0.08);
+      }
+    }
   }
-  
-  .navbar-links a {
-    color: #ffffff;
-    text-decoration: none;
-    padding: 10px 20px;
-    background-color: #495057;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+
+  .navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .action-link {
+      color: var(--navbar-text);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+      &:hover {
+        background: rgba(255,255,255,0.10);
+      }
+    }
+
+    .theme-switch {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--navbar-text);
+      font-size: 1.5rem;
+      margin-left: 0.5rem;
+      padding: 0.25rem;
+      border-radius: 50%;
+      transition: background 0.2s;
+      &:hover {
+        background: rgba(255,255,255,0.10);
+      }
+    }
   }
-  
-  .navbar-links a:hover {
-    background-color: #6c757d;
-  }
+}

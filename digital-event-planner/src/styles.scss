@@ -1,17 +1,9 @@
+@import 'styles/theme';
+
 body {
-    margin: 0  !important;
+  background: var(--background);
+  color: var(--text);
+  font-family: 'Roboto', sans-serif;
+  transition: background 0.3s, color 0.3s;
+  margin: 0;
 }
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-.event-dialog-panel .mat-dialog-container {
-    width: 600px !important;
-    max-width: 90vw !important;
-    padding: 0;
-  }
-  
-  .event-dialog-panel .mat-dialog-container form {
-    padding: 1.5rem; 
-  }
-  

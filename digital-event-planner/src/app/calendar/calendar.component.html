@@ -1,19 +1,22 @@
 <div class="calendar-header">
-  <button (click)="goToPrevious()">←</button>
-  <button (click)="goToToday()">Ma</button>
-  <button (click)="goToNext()">→</button>
-
+  <div class="calendar-nav">
+    <button (click)="goToPrevious()" mat-icon-button>
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button (click)="goToToday()" class="today-btn">Ma</button>
+    <button (click)="goToNext()" mat-icon-button>
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
   <span class="current-view">
     {{ headerTitle }}
   </span>
-
   <div class="view-toggle">
-    <button (click)="view = CalendarView.Month">Hónap</button>
-    <button (click)="view = CalendarView.Week">Hét</button>
-    <button (click)="view = CalendarView.Day">Nap</button>
+    <button [class.active]="view === CalendarView.Month" (click)="view = CalendarView.Month">Hónap</button>
+    <button [class.active]="view === CalendarView.Week" (click)="view = CalendarView.Week">Hét</button>
+    <button [class.active]="view === CalendarView.Day" (click)="view = CalendarView.Day">Nap</button>
   </div>
 </div>
-
 
 <div class="calendar-wrapper">
   <mwl-calendar-month-view

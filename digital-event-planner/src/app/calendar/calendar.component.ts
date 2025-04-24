@@ -17,11 +17,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventDialogComponent, EventDialogData } from '../event-dialog/event-dialog.component';
 import { EventService, EventModel } from '../services/event.service';
 import { EventDetailsDialogComponent, EventDetailsData } from '../details/event-details-dialog/event-details-dialog.component';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, CalendarModule, MatDialogModule, EventDialogComponent, EventDetailsDialogComponent],
+  imports: [CommonModule, CalendarModule, MatDialogModule, EventDialogComponent, EventDetailsDialogComponent, MatIcon],
   providers: [DatePipe],
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
