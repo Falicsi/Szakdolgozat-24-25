@@ -21,6 +21,7 @@
     [viewDate]="viewDate"
     [events]="events"
     (dayClicked)="onDayClick($event.day.date)"
+    (eventClicked)="onEventClick($event.event)"
   ></mwl-calendar-month-view>
 
   <mwl-calendar-week-view
@@ -28,6 +29,7 @@
     [viewDate]="viewDate"
     [events]="events"
     (hourSegmentClicked)="onTimeSlotClick($event.date)"
+    (eventClicked)="onEventClick($event.event)"
   ></mwl-calendar-week-view>
 
   <mwl-calendar-day-view
@@ -35,5 +37,6 @@
     [viewDate]="viewDate"
     [events]="events"
     (hourSegmentClicked)="onTimeSlotClick($event.date)"
+    (eventClicked)="onEventClick($event.event)"
   ></mwl-calendar-day-view>
 </div>

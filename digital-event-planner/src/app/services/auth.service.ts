@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -8,6 +8,11 @@ import { Observable } from 'rxjs';
 
 export class AuthService {
   private apiUrl = 'http://localhost:3000/api/auth';
+
+  private get authHeaders() {
+    const token = localStorage.getItem('token') || '';
+    return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -35,23 +40,22 @@ export class AuthService {
     localStorage.removeItem('authToken');
   }
 
-  // GET all users
   getAllUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/users`);
   }
 
-  // Törlés
-  deleteUser(userId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/users/${userId}`);
-  }
-
-  // Frissítés
-  updateUser(user: { _id: string; username: string; email: string; password?: string })
-    : Observable<{ _id: string; username: string; email: string }> {
-    return this.http.put<{ _id: string; username: string; email: string }>(
-      `${this.apiUrl}/users/${user._id}`,
-      user
+  deleteUser(userId: string) {
+    return this.http.delete<void>(
+      `${this.apiUrl}/users/${userId}`,
+      this.authHeaders
     );
   }
-
+  
+  updateUser(user: { _id: string; /*…*/ }) {
+    return this.http.put<{ _id:string;username:string;email:string }>(
+      `${this.apiUrl}/users/${user._id}`,
+      user,
+      this.authHeaders
+    );
+  }
 }

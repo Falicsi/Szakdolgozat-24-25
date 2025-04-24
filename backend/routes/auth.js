@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
+const auth    = require('../middleware/auth'); 
 
 const JWT_SECRET = 'szakdolgozat';
 
@@ -64,7 +65,7 @@ router.post('/login', async (req, res) => {
           { expiresIn: '1h' }
       );
 
-      res.status(200).json({ message: 'Login successful', token, username: user.username });
+      res.status(200).json({ message: 'Login successful', token, username: user.username, userId: user._id });
 
   } catch (err) {
       console.error(err);
@@ -72,8 +73,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// DELETE /api/auth/users/:id – felhasználó törlése
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id', auth, async (req, res) => {
+  if (req.params.id === req.userId) {
+    return res.status(403).json({ message: 'Nem törölheted saját fiókodat' });
+  }
   try {
     await User.findByIdAndDelete(req.params.id);
     res.json({ message: 'Felhasználó törölve' });
@@ -83,7 +86,10 @@ router.delete('/users/:id', async (req, res) => {
 });
 
 // PUT /api/auth/users/:id – felhasználó frissítése
-router.put('/users/:id', async (req, res) => {
+router.put('/users/:id', auth, async (req, res) => {
+  if (req.params.id === req.userId) {
+    return res.status(403).json({ message: 'Nem módosíthatod saját fiókodat' });
+  }
   const { username, email, password } = req.body;
   const updates = { username, email };
   try {

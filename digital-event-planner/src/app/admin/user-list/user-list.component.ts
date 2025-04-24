@@ -21,14 +21,14 @@ import { UserEditDialogComponent, UserDialogData } from '../user-edit-dialog/use
 })
 export class UserListComponent implements OnInit {
   users: any[] = [];
-  currentUserId = '';
+  currentUserId: string = '';
   displayedColumns = ['_id','username','email','actions'];
 
   constructor(private authService: AuthService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.authService.getAllUsers().subscribe(u => this.users = u);
     this.currentUserId = localStorage.getItem('userId') || '';
+    this.authService.getAllUsers().subscribe(u => this.users = u);
   }
 
   edit(u: any) {

@@ -14,13 +14,14 @@ import {
   addMonths
 } from 'date-fns';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { EventDialogComponent } from '../event-dialog/event-dialog.component';
+import { EventDialogComponent, EventDialogData } from '../event-dialog/event-dialog.component';
 import { EventService, EventModel } from '../services/event.service';
+import { EventDetailsDialogComponent, EventDetailsData } from '../details/event-details-dialog/event-details-dialog.component';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, CalendarModule, MatDialogModule, EventDialogComponent],
+  imports: [CommonModule, CalendarModule, MatDialogModule, EventDialogComponent, EventDetailsDialogComponent],
   providers: [DatePipe],
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
@@ -29,7 +30,8 @@ export class CalendarComponent implements OnInit {
   view: CalendarView = CalendarView.Month;
   viewDate: Date = new Date();
   events: CalendarEvent[] = [];
-  CalendarView = CalendarView; // a template-hez
+  CalendarView = CalendarView;
+  currentUsername = '';
   constructor(private datePipe: DatePipe, private dialog: MatDialog, private eventService: EventService) {}
 
   ngOnInit(): void {
@@ -41,6 +43,25 @@ export class CalendarComponent implements OnInit {
         title: e.title,
         color: { primary: '#1e90ff', secondary: '#D1E8FF' },
         meta: { _id: e._id, description: e.description, createdBy: e.createdBy, invitedUsers: e.invitedUsers }
+      }));
+    });
+    this.currentUsername = localStorage.getItem('username') || '';
+    this.loadEvents();
+  }
+
+  private loadEvents(): void {
+    this.eventService.getEvents().subscribe((es: EventModel[]) => {
+      this.events = es.map(e => ({
+        start: new Date(e.start),
+        end:   e.end ? new Date(e.end) : undefined,
+        title: e.title,
+        color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+        meta: {
+          _id:           e._id!,
+          description:   e.description || '',
+          createdBy:     e.createdBy || '',
+          invitedUsers:  e.invitedUsers || []
+        }
       }));
     });
   }
@@ -70,75 +91,101 @@ export class CalendarComponent implements OnInit {
   }
 
   onDayClick(date: Date): void {
-    const ref = this.dialog.open(EventDialogComponent, {
-      data: { date },
-      panelClass: 'event-dialog-panel',
-    });
-  
+    const defaultDate = new Date(date);
+    const now = new Date();
+    const mins = now.getMinutes();
+    let hours = now.getHours();
+    let minutes = 0;
+
+    if (mins > 30) {
+      hours = hours + 1;
+      minutes = 0;
+    } else if (mins > 0) {
+      minutes = 30;
+    }
+
+    defaultDate.setHours(hours, minutes, 0, 0);
+
+    const ref = this.dialog.open<EventDialogComponent, EventDialogData>(
+      EventDialogComponent,
+      {
+        data: { date: defaultDate },
+        panelClass: 'event-dialog-panel'
+      }
+    );
+
     ref.afterClosed().subscribe(result => {
       if (!result) return;
       const newEvent: EventModel = {
         title:        result.title,
         start:        result.start.toISOString(),
-        end:          result.end.toISOString(),
+        end:          result.end  .toISOString(),
         description:  result.description,
         createdBy:    result.createdBy,
         invitedUsers: result.invitedUsers
       };
-      this.eventService.createEvent(newEvent).subscribe(saved => {
-        // hozzáadjuk a táblázathoz
-        this.events = [
-          ...this.events,
-          {
-            start: new Date(saved.start),
-            end:   new Date(saved.end),
-            title: saved.title,
-            color: { primary: '#ad2121', secondary: '#FAE3E3' },
-            meta: { _id: saved._id, description: saved.description, createdBy: saved.createdBy, invitedUsers: saved.invitedUsers }
-          }
-        ];
-      });
+      this.eventService.createEvent(newEvent).subscribe(() => this.loadEvents());
     });
-  }  
+  }
 
   onEventClick(event: CalendarEvent & { meta?: any }): void {
-    const ref = this.dialog.open(EventDialogComponent, {
-      data: {
-        date:         event.start,
-        title:        event.title,
-        start:        event.start,
-        end:          event.end,
-        description:  event.meta.description,
-        createdBy:    event.meta.createdBy,
-        invitedUsers: event.meta.invitedUsers
-      },
-      panelClass: 'event-dialog-panel'
+    const isOwner = event.meta?.createdBy === this.currentUsername;
+    const dialogRef = this.dialog.open<EventDetailsDialogComponent, EventDetailsData>(
+      EventDetailsDialogComponent,
+      {
+        data: {
+          date:  event.start,
+          title: event.title,
+          start: event.start,
+          end:   event.end!,
+          meta: {
+            _id:           event.meta!._id,
+            description:   event.meta!.description,
+            createdBy:     event.meta!.createdBy,
+            invitedUsers:  event.meta!.invitedUsers
+          },
+          isOwner
+        },
+        panelClass: 'event-dialog-panel'
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res?.edit && isOwner) {
+        this.openEditDialog(event);
+      }
     });
-  
+  }
+
+  private openEditDialog(event: CalendarEvent & { meta?: any }): void {
+    const ref = this.dialog.open<EventDialogComponent, EventDialogData>(
+      EventDialogComponent,
+      {
+        data: {
+          date:         event.start,
+          title:        event.title,
+          start:        event.start,
+          end:          event.end!,
+          description:  event.meta!.description,
+          createdBy:    event.meta!.createdBy,
+          invitedUsers: event.meta!.invitedUsers
+        },
+        panelClass: 'event-dialog-panel'
+      }
+    );
+
     ref.afterClosed().subscribe(result => {
       if (!result) return;
       const updated: EventModel = {
-        _id:          event.meta._id,
-        title:        result.title,
-        start:        result.start.toISOString(),
-        end:          result.end.toISOString(),
-        description:  result.description,
-        createdBy:    result.createdBy,
-        invitedUsers: result.invitedUsers
+        _id:           event.meta!._id,
+        title:         result.title,
+        start:         result.start.toISOString(),
+        end:           result.end.toISOString(),
+        description:   result.description,
+        createdBy:     result.createdBy,
+        invitedUsers:  result.invitedUsers
       };
-      this.eventService.updateEvent(updated).subscribe(saved => {
-        this.events = this.events.map(e =>
-          e.meta?._id === saved._id
-            ? {
-                start: new Date(saved.start),
-                end:   new Date(saved.end),
-                title: saved.title,
-                color: e.color,
-                meta:  { _id: saved._id, description: saved.description, createdBy: saved.createdBy, invitedUsers: saved.invitedUsers }
-              }
-            : e
-        );
-      });
+      this.eventService.updateEvent(updated).subscribe(() => this.loadEvents());
     });
   }
 
