@@ -1,0 +1,29 @@
+<!-- src/app/admin/event-list/event-list.component.html -->
+<table mat-table [dataSource]="events" class="mat-elevation-z1">
+    <ng-container matColumnDef="_id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell           *matCellDef="let e">{{e._id}}</td>
+    </ng-container>
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef>Title</th>
+      <td mat-cell           *matCellDef="let e">{{e.title}}</td>
+    </ng-container>
+    <ng-container matColumnDef="start">
+      <th mat-header-cell *matHeaderCellDef>Start</th>
+      <td mat-cell           *matCellDef="let e">{{e.start | date:'short'}}</td>
+    </ng-container>
+    <ng-container matColumnDef="end">
+      <th mat-header-cell *matHeaderCellDef>End</th>
+      <td mat-cell           *matCellDef="let e">{{e.end | date:'short'}}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell           *matCellDef="let e">
+        <button mat-button color="warn" (click)="delete(e._id!)">Törlés</button>
+      </td>
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row        *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  

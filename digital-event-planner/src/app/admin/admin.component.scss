@@ -1,0 +1,13 @@
+.admin-nav {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f0f0f0;
+    a {
+      text-decoration: none;
+      font-weight: 500;
+      &.active { color: #1976d2; }
+    }
+  }
+  .admin-content { padding: 1rem; }
+  

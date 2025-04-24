@@ -34,4 +34,14 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('authToken');
   }
+
+  // GET all users
+getAllUsers(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}/users`);
+}
+// DELETE user
+deleteUser(userId: string): Observable<void> {
+  return this.http.delete<void>(`${this.apiUrl}/users/${userId}`);
+}
+
 }
