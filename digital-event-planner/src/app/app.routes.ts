@@ -19,7 +19,7 @@ export const APP_ROUTES: Routes = [
     path: 'admin',
     component: AdminComponent,
     children: [
-      { path: '',       redirectTo: 'users', pathMatch: 'full' },
+      { path: '', redirectTo: 'users', pathMatch: 'full' },
       { path: 'users',  component: UserListComponent },
       { path: 'events', component: EventListComponent }
     ]

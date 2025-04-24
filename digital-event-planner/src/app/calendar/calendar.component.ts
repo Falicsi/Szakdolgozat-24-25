@@ -15,6 +15,7 @@ import {
 } from 'date-fns';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventDialogComponent } from '../event-dialog/event-dialog.component';
+import { EventService, EventModel } from '../services/event.service';
 
 @Component({
   selector: 'app-calendar',
@@ -29,13 +30,19 @@ export class CalendarComponent implements OnInit {
   viewDate: Date = new Date();
   events: CalendarEvent[] = [];
   CalendarView = CalendarView; // a template-hez
-  constructor(private datePipe: DatePipe, private dialog: MatDialog) {}
+  constructor(private datePipe: DatePipe, private dialog: MatDialog, private eventService: EventService) {}
 
   ngOnInit(): void {
-    this.events = [
-      { start: startOfDay(new Date()), title: 'Mai példa', color: { primary: '#1e90ff', secondary: '#D1E8FF' } },
-      { start: addDays(startOfDay(new Date()), 1), title: 'Holnapi példa', color: { primary: '#e3bc08', secondary: '#FDF1BA' } }
-    ];
+    this.eventService.getEvents().subscribe(events => {
+      // a backendről kapott EventModel[] tömböt tároljuk
+      this.events = events.map(e => ({
+        start: new Date(e.start),
+        end:   e.end ? new Date(e.end) : undefined,
+        title: e.title,
+        color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+        meta: { _id: e._id, description: e.description, createdBy: e.createdBy, invitedUsers: e.invitedUsers }
+      }));
+    });
   }
 
   goToPrevious(): void {
@@ -67,37 +74,72 @@ export class CalendarComponent implements OnInit {
       data: { date },
       panelClass: 'event-dialog-panel',
     });
-
+  
     ref.afterClosed().subscribe(result => {
-      if (result) {
+      if (!result) return;
+      const newEvent: EventModel = {
+        title:        result.title,
+        start:        result.start.toISOString(),
+        end:          result.end.toISOString(),
+        description:  result.description,
+        createdBy:    result.createdBy,
+        invitedUsers: result.invitedUsers
+      };
+      this.eventService.createEvent(newEvent).subscribe(saved => {
+        // hozzáadjuk a táblázathoz
         this.events = [
           ...this.events,
           {
-            start: result.start,
-            end:   result.end,
-            title: result.title,
-            color: { primary: '#ad2121', secondary: '#FAE3E3' }
+            start: new Date(saved.start),
+            end:   new Date(saved.end),
+            title: saved.title,
+            color: { primary: '#ad2121', secondary: '#FAE3E3' },
+            meta: { _id: saved._id, description: saved.description, createdBy: saved.createdBy, invitedUsers: saved.invitedUsers }
           }
         ];
-      }
+      });
     });
-  }
+  }  
 
-  onEventClick(event: CalendarEvent): void {
+  onEventClick(event: CalendarEvent & { meta?: any }): void {
     const ref = this.dialog.open(EventDialogComponent, {
       data: {
         date:         event.start,
         title:        event.title,
         start:        event.start,
         end:          event.end,
-        description:  (event as any).description,
-        createdBy:    (event as any).createdBy,
-        invitedUsers: (event as any).invitedUsers
+        description:  event.meta.description,
+        createdBy:    event.meta.createdBy,
+        invitedUsers: event.meta.invitedUsers
       },
-      panelClass: 'event-dialog-panel'   // ← és ide
+      panelClass: 'event-dialog-panel'
     });
-
-    ref.afterClosed().subscribe(/* … */);
+  
+    ref.afterClosed().subscribe(result => {
+      if (!result) return;
+      const updated: EventModel = {
+        _id:          event.meta._id,
+        title:        result.title,
+        start:        result.start.toISOString(),
+        end:          result.end.toISOString(),
+        description:  result.description,
+        createdBy:    result.createdBy,
+        invitedUsers: result.invitedUsers
+      };
+      this.eventService.updateEvent(updated).subscribe(saved => {
+        this.events = this.events.map(e =>
+          e.meta?._id === saved._id
+            ? {
+                start: new Date(saved.start),
+                end:   new Date(saved.end),
+                title: saved.title,
+                color: e.color,
+                meta:  { _id: saved._id, description: saved.description, createdBy: saved.createdBy, invitedUsers: saved.invitedUsers }
+              }
+            : e
+        );
+      });
+    });
   }
 
   onTimeSlotClick(date: Date): void {
