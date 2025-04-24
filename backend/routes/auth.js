@@ -59,12 +59,12 @@ router.post('/login', async (req, res) => {
       }
 
       const token = jwt.sign(
-          { userId: user._id, email: user.email },
+          { userId: user._id, email: user.email, username: user.username },
           JWT_SECRET,
           { expiresIn: '1h' }
       );
 
-      res.status(200).json({ message: 'Login successful', token });
+      res.status(200).json({ message: 'Login successful', token, username: user.username });
 
   } catch (err) {
       console.error(err);

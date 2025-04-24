@@ -14,6 +14,7 @@ import { NavbarComponent } from '../../navbar/navbar.component';
 })
 
 export class LoginComponent {
+  username: string = '';
   email: string = '';
   password: string = '';
   errorMessage: string = '';
@@ -25,6 +26,7 @@ export class LoginComponent {
       (response) => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('email', this.email);
+        localStorage.setItem('username', response.username);
         this.router.navigate(['/home']);
       },
       (error) => {

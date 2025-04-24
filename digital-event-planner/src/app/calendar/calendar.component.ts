@@ -64,7 +64,8 @@ export class CalendarComponent implements OnInit {
 
   onDayClick(date: Date): void {
     const ref = this.dialog.open(EventDialogComponent, {
-      data: { date }
+      data: { date },
+      panelClass: 'event-dialog-panel',
     });
 
     ref.afterClosed().subscribe(result => {
@@ -80,6 +81,23 @@ export class CalendarComponent implements OnInit {
         ];
       }
     });
+  }
+
+  onEventClick(event: CalendarEvent): void {
+    const ref = this.dialog.open(EventDialogComponent, {
+      data: {
+        date:         event.start,
+        title:        event.title,
+        start:        event.start,
+        end:          event.end,
+        description:  (event as any).description,
+        createdBy:    (event as any).createdBy,
+        invitedUsers: (event as any).invitedUsers
+      },
+      panelClass: 'event-dialog-panel'   // ← és ide
+    });
+
+    ref.afterClosed().subscribe(/* … */);
   }
 
   onTimeSlotClick(date: Date): void {

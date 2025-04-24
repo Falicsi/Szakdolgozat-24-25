@@ -1,25 +1,38 @@
-<div class="container">
-    <app-navbar/>
-  
-    <!-- Main Content -->
-    <div class="main-content">
-      <div *ngIf="isAuthenticated; else loginForm">
-        <h1>Welcome, {{ email }}!</h1>
+<div class="home-layout">
+  <!-- 1. Fixed header -->
+  <header class="header">
+    <app-navbar></app-navbar>
+  </header>
+
+  <!-- 2. Kétoszlopos középső rész -->
+  <div class="content-body">
+    <!-- bal oldali sidebar a profilnak -->
+    <aside class="sidebar">
+      <div *ngIf="isAuthenticated">
         <p>You're logged in. Explore our platform.</p>
-        <div class="home-container">
-            <app-calendar></app-calendar>
-        </div>          
+        <mat-icon>account_circle</mat-icon>
+        <div class="user-email">{{ email }}</div>
+        <div class="user-username">{{ username }}</div>
         <button (click)="logout()">Logout</button>
       </div>
-  
+    </aside>
+
+    <!-- fő tartalom: welcome + naptár + logout gomb -->
+    <main class="main-area">
+      <div *ngIf="isAuthenticated; else loginForm">
+        <div class="home-container">
+          <app-calendar></app-calendar>
+        </div>
+      </div>
       <ng-template #loginForm>
         <h1>Please log in to access the homepage</h1>
-        <p><a href="/login">Login</a> or <a href="/register">Register</a></p>
+        <p><a routerLink="/login">Login</a> or <a routerLink="/register">Register</a></p>
       </ng-template>
-    </div>
-  
-    <footer>
-      <p>&copy; 2025 Digital Event Planner Szakdolgozat Béres Ákos</p>
-    </footer>
+    </main>
   </div>
-  
+
+  <!-- 3. Fixed footer -->
+  <footer class="footer">
+    <p>&copy; 2025 Digital Event Planner Szakdolgozat Béres Ákos</p>
+  </footer>
+</div>

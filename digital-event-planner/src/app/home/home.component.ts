@@ -4,16 +4,18 @@ import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { CalendarComponent } from '../calendar/calendar.component';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [CommonModule, CalendarComponent, NavbarComponent]
+  imports: [CommonModule, CalendarComponent, NavbarComponent, MatIconModule]
 })
 export class HomeComponent implements OnInit {
   isAuthenticated: boolean = false;
   email: string = '';
+  username: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -21,12 +23,14 @@ export class HomeComponent implements OnInit {
     this.isAuthenticated = !!localStorage.getItem('token');
     if (this.isAuthenticated) {
       this.email = localStorage.getItem('email') || '';
+      this.username = localStorage.getItem('username') || '';
     }
   }
 
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
+    localStorage.removeItem('username');
     this.isAuthenticated = false;
     this.router.navigate(['/login']);
   }

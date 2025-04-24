@@ -1,3 +1,4 @@
+// backend/models/Event.js
 const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema({
@@ -18,13 +19,13 @@ const eventSchema = new mongoose.Schema({
     default: ''
   },
   createdBy: {
-    type: String, // később lehet ObjectId is, ha van User modell
+    type: String,
     required: true
   },
   invitedUsers: {
-    type: [String], // e-mail címek vagy user ID-k tömbje
+    type: [String], 
     default: []
   }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Event', eventSchema);

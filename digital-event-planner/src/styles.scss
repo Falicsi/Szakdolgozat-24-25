@@ -4,3 +4,14 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.event-dialog-panel .mat-dialog-container {
+    width: 600px !important;
+    max-width: 90vw !important;
+    padding: 0;
+  }
+  
+  .event-dialog-panel .mat-dialog-container form {
+    padding: 1.5rem; 
+  }
+  
