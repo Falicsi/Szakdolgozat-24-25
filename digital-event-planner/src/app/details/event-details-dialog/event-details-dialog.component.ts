@@ -45,9 +45,8 @@ export interface EventDetailsData extends EventDialogData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="close()">Bezár</button>
-      <button mat-button color="primary"
-        *ngIf="data.isOwner"
-        (click)="edit()">Szerkesztés</button>
+      <button mat-button color="primary" *ngIf="data.isOwner" (click)="edit()">Szerkesztés</button>
+      <button mat-button color="warn" *ngIf="data.isOwner" (click)="delete()">Törlés</button>
     </mat-dialog-actions>
   `,
   styles: [`
@@ -69,5 +68,9 @@ export class EventDetailsDialogComponent implements OnInit {
 
   edit() {
     this.dialogRef.close({ edit: true });
+  }
+
+  delete() {
+    this.dialogRef.close({ delete: true });
   }
 }

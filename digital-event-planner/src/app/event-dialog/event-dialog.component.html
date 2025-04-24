@@ -1,15 +1,12 @@
-<h2 mat-dialog-title>{{ data.title ? 'Esemény szerkesztése' : 'Új esemény' }}</h2>
+<h2 mat-dialog-title>
+  {{ data.title ? 'Esemény szerkesztése' : 'Új esemény' }}
+</h2>
+
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <!-- Cím -->
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Cím</mat-label>
     <input matInput formControlName="title" />
-  </mat-form-field>
-
-  <!-- Leírás -->
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Leírás</mat-label>
-    <textarea matInput formControlName="description"></textarea>
   </mat-form-field>
 
   <!-- Kezdés -->
@@ -24,22 +21,37 @@
     <input matInput type="datetime-local" formControlName="end" />
   </mat-form-field>
 
-  <!-- Létrehozó -->
+  <!-- Leírás -->
   <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Létrehozó</mat-label>
-    <input matInput formControlName="createdBy" />
+    <mat-label>Leírás</mat-label>
+    <textarea matInput formControlName="description" rows="3"></textarea>
   </mat-form-field>
 
-  <!-- Meghívottak -->
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Meghívottak (vesszővel elválasztva)</mat-label>
-    <input matInput formControlName="invitedUsers" placeholder="email1@example.com, email2@example.com" />
-  </mat-form-field>
+  <!-- Létrehozó (readonly input, user emaillel) -->
+<mat-form-field appearance="fill" class="full-width">
+  <mat-label>Létrehozó</mat-label>
+  <input matInput formControlName="createdBy" [readonly]="true" />
+</mat-form-field>
 
+  <!-- Meghívottak (önmagunk nem választható) -->
+<mat-form-field appearance="fill" class="full-width">
+  <mat-label>Meghívottak</mat-label>
+  <mat-select formControlName="invitedUsers" multiple>
+    <mat-select-trigger>
+      {{ form.value.invitedUsers.length ? form.value.invitedUsers.join(', ') : 'Válassz…' }}
+    </mat-select-trigger>
+    <mat-option
+      *ngFor="let email of selectableUsers"
+      [value]="email"
+    >
+      {{ email }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+  <!-- Gombok -->
   <div mat-dialog-actions align="end">
     <button mat-button (click)="dialogRef.close()">Mégse</button>
-    <!-- csak szerkesztéskor jelenik meg -->
-    <button mat-button color="warn" *ngIf="data.title" (click)="onDelete()">Törlés</button>
     <button mat-flat-button color="primary" [disabled]="form.invalid">
       {{ data.title ? 'Frissítés' : 'Mentés' }}
     </button>

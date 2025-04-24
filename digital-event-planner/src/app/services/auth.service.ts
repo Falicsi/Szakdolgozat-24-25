@@ -44,6 +44,10 @@ export class AuthService {
     return this.http.get<any[]>(`${this.apiUrl}/users`);
   }
 
+  getCurrentUserEmail(): string | null {
+    return localStorage.getItem('email');
+  }
+
   deleteUser(userId: string) {
     return this.http.delete<void>(
       `${this.apiUrl}/users/${userId}`,

@@ -129,30 +129,31 @@ export class CalendarComponent implements OnInit {
   }
 
   onEventClick(event: CalendarEvent & { meta?: any }): void {
-    const isOwner = event.meta?.createdBy === this.currentUsername;
-    const dialogRef = this.dialog.open<EventDetailsDialogComponent, EventDetailsData>(
-      EventDetailsDialogComponent,
-      {
-        data: {
-          date:  event.start,
-          title: event.title,
-          start: event.start,
-          end:   event.end!,
-          meta: {
-            _id:           event.meta!._id,
-            description:   event.meta!.description,
-            createdBy:     event.meta!.createdBy,
-            invitedUsers:  event.meta!.invitedUsers
-          },
-          isOwner
+    const currentUserEmail = localStorage.getItem('email') || '';
+    const isOwner = event.meta?.createdBy === currentUserEmail;
+    const dialogRef = this.dialog.open(EventDetailsDialogComponent, {
+      data: {
+        date:  event.start,
+        title: event.title,
+        start: event.start,
+        end:   event.end!,
+        meta: {
+          _id:           event.meta!._id,
+          description:   event.meta!.description,
+          createdBy:     event.meta!.createdBy,
+          invitedUsers:  event.meta!.invitedUsers
         },
-        panelClass: 'event-dialog-panel'
-      }
-    );
+        isOwner
+      },
+      panelClass: 'event-dialog-panel'
+    });
 
     dialogRef.afterClosed().subscribe(res => {
       if (res?.edit && isOwner) {
         this.openEditDialog(event);
+      }
+      if (res?.delete && isOwner) {
+        this.eventService.deleteEvent(event.meta._id).subscribe(() => this.loadEvents());
       }
     });
   }
