@@ -72,4 +72,38 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// DELETE /api/auth/users/:id – felhasználó törlése
+router.delete('/users/:id', async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Felhasználó törölve' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// PUT /api/auth/users/:id – felhasználó frissítése
+router.put('/users/:id', async (req, res) => {
+  const { username, email, password } = req.body;
+  const updates = { username, email };
+  try {
+    if (password) {
+      updates.password = await bcrypt.hash(password, 10);
+    }
+    const updated = await User.findByIdAndUpdate(
+      req.params.id,
+      updates,
+      { new: true }
+    );
+    res.json({
+      _id:      updated._id,
+      username: updated.username,
+      email:    updated.email
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+
 module.exports = router;

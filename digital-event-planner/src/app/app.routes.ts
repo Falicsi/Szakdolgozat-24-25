@@ -5,12 +5,21 @@ import { RegisterComponent } from './auth/register/register.component';
 import { AdminComponent   } from './admin/admin.component';
 import { UserListComponent } from './admin/user-list/user-list.component';
 import { EventListComponent }from './admin/event-list/event-list.component';
+import { LoginGuard } from './auth/login.guard';
 
 export const APP_ROUTES: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [LoginGuard]
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    canActivate: [LoginGuard]
+  },
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)

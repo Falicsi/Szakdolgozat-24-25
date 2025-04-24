@@ -36,12 +36,22 @@ export class AuthService {
   }
 
   // GET all users
-getAllUsers(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/users`);
-}
-// DELETE user
-deleteUser(userId: string): Observable<void> {
-  return this.http.delete<void>(`${this.apiUrl}/users/${userId}`);
-}
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users`);
+  }
+
+  // Törlés
+  deleteUser(userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/users/${userId}`);
+  }
+
+  // Frissítés
+  updateUser(user: { _id: string; username: string; email: string; password?: string })
+    : Observable<{ _id: string; username: string; email: string }> {
+    return this.http.put<{ _id: string; username: string; email: string }>(
+      `${this.apiUrl}/users/${user._id}`,
+      user
+    );
+  }
 
 }

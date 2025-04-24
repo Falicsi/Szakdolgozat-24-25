@@ -4,6 +4,9 @@ import { CommonModule }             from '@angular/common';
 import { MatTableModule }           from '@angular/material/table';
 import { MatButtonModule }          from '@angular/material/button';
 import { AuthService }              from '../../services/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { UserEditDialogComponent, UserDialogData } from '../user-edit-dialog/user-edit-dialog.component';
+
 
 @Component({
   selector: 'app-user-list',
@@ -17,13 +20,28 @@ import { AuthService }              from '../../services/auth.service';
   styleUrls: ['./user-list.component.scss']
 })
 export class UserListComponent implements OnInit {
-  users: any[] = [];                // legyen definiálva
+  users: any[] = [];
+  currentUserId = '';
   displayedColumns = ['_id','username','email','actions'];
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.authService.getAllUsers().subscribe(u => this.users = u);
+    this.currentUserId = localStorage.getItem('userId') || '';
+  }
+
+  edit(u: any) {
+    const ref = this.dialog.open<UserEditDialogComponent, UserDialogData>(
+      UserEditDialogComponent,
+      { data: { _id: u._id, username: u.username, email: u.email } }
+    );
+    ref.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.authService.updateUser(result).subscribe(updated => {
+        this.users = this.users.map(x => x._id === updated._id ? updated : x);
+      });
+    });
   }
 
   delete(userId: string): void {    // legyen metódus

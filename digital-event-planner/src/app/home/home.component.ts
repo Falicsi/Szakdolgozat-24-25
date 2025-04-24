@@ -16,6 +16,7 @@ export class HomeComponent implements OnInit {
   isAuthenticated: boolean = false;
   email: string = '';
   username: string = '';
+  userId: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -24,6 +25,7 @@ export class HomeComponent implements OnInit {
     if (this.isAuthenticated) {
       this.email = localStorage.getItem('email') || '';
       this.username = localStorage.getItem('username') || '';
+      this.userId = localStorage.getItem('userId') || '';
     }
   }
 
@@ -31,6 +33,7 @@ export class HomeComponent implements OnInit {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
     localStorage.removeItem('username');
+    localStorage.removeItem('userId');
     this.isAuthenticated = false;
     this.router.navigate(['/login']);
   }

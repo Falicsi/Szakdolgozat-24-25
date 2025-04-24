@@ -15,6 +15,13 @@ import { NavbarComponent } from '../../navbar/navbar.component';
 })
 
 export class RegisterComponent {
+  ngOnInit() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.router.navigate(['/home']);
+    }
+  }
+  
   username: string = '';
   email: string = '';
   password: string = '';
