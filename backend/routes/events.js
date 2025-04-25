@@ -1,26 +1,14 @@
 // backend/routes/events.js
-const express = require('express');
-const router = express.Router();
-const Event = require('../models/Event');
-const Invitation = require('../models/Invitation');
+const express      = require('express');
+const router       = express.Router();
+const Event        = require('../models/Event');
+const Invitation   = require('../models/Invitation');
 const Notification = require('../models/Notification');
-const auth = require('../middleware/auth');
+const auth         = require('../middleware/auth');
 
-// GET /api/events
-router.get('/', async (req, res) => {
+// POST /api/events – új esemény létrehozása
+router.post('/', auth, async (req, res) => {
   try {
-    const events = await Event.find().sort({ start: 1 });
-    res.json(events);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// POST /api/events – új esemény
-// router.post('/', auth, async (req, res) => {
-router.post('/', async (req, res) => { // <-- auth törölve
-  try {
-    // Destructuring és alapértelmezett értékek
     const {
       title,
       description = '',
@@ -32,22 +20,28 @@ router.post('/', async (req, res) => { // <-- auth törölve
       invitedUsers = []
     } = req.body;
 
-    // Egyszerű validáció
     if (!title || !start || !createdBy) {
-      return res.status(400).json({ message: 'title, start és createdBy mezők kötelezők' });
+      return res.status(400).json({ message: 'title, start és createdBy kötelező' });
     }
 
-    // Build evData objektum csak a megadott mezőkkel
+    // Esemény mentése
     const evData = { title, description, start, end, createdBy, invitedUsers };
     if (category) evData.category = category;
     if (resource) evData.resource = resource;
 
-    // Mentés
     const ev = new Event(evData);
     const saved = await ev.save();
 
-    // Automatikus invitation + notification
-    await Promise.all(invitedUsers.map(async userId => {
+    // 1) Szervező automatikus accepted meghívása
+    await Invitation.create({
+      eventId: saved._id,
+      userId:  createdBy,
+      status:  'accepted'
+    });
+
+    // 2) A többi meghívott pending státusszal
+    const others = invitedUsers.filter(uid => uid !== createdBy);
+    await Promise.all(others.map(async userId => {
       await Invitation.create({
         eventId: saved._id,
         userId,
@@ -61,22 +55,21 @@ router.post('/', async (req, res) => { // <-- auth törölve
       });
     }));
 
-    res.status(201).json(saved);
+    return res.status(201).json(saved);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return res.status(400).json({ message: err.message });
   }
 });
 
 // PUT /api/events/:id – esemény frissítése
 router.put('/:id', auth, async (req, res) => {
   try {
-    // Lekérjük a korábbi eseményt
+    // Létező esemény lekérése
     const oldEv = await Event.findById(req.params.id);
     if (!oldEv) {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    // Destructuring és alapértelmezett értékek
     const {
       title,
       description = '',
@@ -87,27 +80,40 @@ router.put('/:id', auth, async (req, res) => {
       invitedUsers = []
     } = req.body;
 
-    // Validáció
     if (!title || !start) {
-      return res.status(400).json({ message: 'title és start mezők kötelezők' });
+      return res.status(400).json({ message: 'title és start kötelező' });
     }
 
-    // Update data csak a megadott mezőkkel
+    // Esemény adatainak frissítése
     const updateData = { title, description, start, end, invitedUsers };
     if (category) updateData.category = category;
     if (resource) updateData.resource = resource;
 
-    // Mentés
     const updated = await Event.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true }
     );
 
-    // Új meghívottak azonosítása
+    // 1) Szervező meghívásának ellenőrzése:
+    // Ha még nincs Invitation createdBy-hoz, hozzuk létre accepted-ként
+    const existsOrgInv = await Invitation.findOne({
+      eventId: updated._id,
+      userId:  oldEv.createdBy
+    });
+    if (!existsOrgInv) {
+      await Invitation.create({
+        eventId: updated._id,
+        userId:  oldEv.createdBy,
+        status:  'accepted'
+      });
+    }
+
+    // 2) Új meghívottak kezelése (akik még nem voltak):
     const newlyAdded = invitedUsers.filter(
       uid => !oldEv.invitedUsers.includes(uid)
-    );
+    ).filter(uid => uid !== oldEv.createdBy);
+
     await Promise.all(newlyAdded.map(async userId => {
       await Invitation.create({
         eventId: updated._id,
@@ -122,17 +128,28 @@ router.put('/:id', auth, async (req, res) => {
       });
     }));
 
-    res.json(updated);
+    return res.json(updated);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    return res.status(400).json({ message: err.message });
   }
 });
 
-// DELETE /api/events/:id
-router.delete('/:id', async (req, res) => {
+// GET /api/events – összes esemény
+router.get('/', auth, async (req, res) => {
   try {
-    await Event.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Törölve' });
+    const events = await Event.find();
+    res.json(events);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/events/:id – egy esemény
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const ev = await Event.findById(req.params.id);
+    if (!ev) return res.status(404).json({ message: 'Event not found' });
+    res.json(ev);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

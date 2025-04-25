@@ -36,6 +36,7 @@ export class CalendarComponent implements OnInit {
   constructor(private datePipe: DatePipe, private dialog: MatDialog, private eventService: EventService) {}
 
   ngOnInit(): void {
+    console.log('Stored token:', localStorage.getItem('token'));
     this.eventService.getEvents().subscribe(events => {
       this.events = events.map(e => ({
         start: new Date(e.start),

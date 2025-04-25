@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -9,27 +10,37 @@ import { Observable } from 'rxjs';
 export class AuthService {
   private apiUrl = 'http://localhost:3000/api/auth';
 
-  private get authHeaders() {
-    const token = localStorage.getItem('token') || '';
-    return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
-  }
-
   constructor(private http: HttpClient) {}
 
   register(username: string, email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, { username, email, password });
   }
 
-  login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, password });
+  login(email: string, password: string) {
+    return this.http.post<{ token: string, username: string, userId: string, email?: string }>(
+      `${this.apiUrl}/login`,
+      { email, password }
+    ).pipe(tap(res => {
+      localStorage.setItem('token', res.token);
+      localStorage.setItem('username', res.username);
+      localStorage.setItem('userId', res.userId);
+      if (res.email) {
+        localStorage.setItem('email', res.email);
+      }
+    }));
+  }
+
+  get authHeaders() {
+    const token = localStorage.getItem('token') || '';
+    return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
   }
 
   saveToken(token: string) {
-    localStorage.setItem('authToken', token);
+    localStorage.setItem('token', token);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    return localStorage.getItem('token');
   }
 
   isAuthenticated(): boolean {
@@ -37,7 +48,7 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
   }
 
   getAllUsers(): Observable<any[]> {

@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const auth    = require('../middleware/auth'); 
 
-const JWT_SECRET = 'szakdolgozat';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
           { expiresIn: '1h' }
       );
 
-      res.status(200).json({ message: 'Login successful', token, username: user.username, userId: user._id });
+      res.status(200).json({ message: 'Login successful', token, username: user.username, userId: user._id.toString() });
 
   } catch (err) {
       console.error(err);
