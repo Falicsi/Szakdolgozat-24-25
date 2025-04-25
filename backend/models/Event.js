@@ -6,6 +6,14 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+  },
+  resource: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Resource',
+  },
   start: {
     type: Date,
     required: true

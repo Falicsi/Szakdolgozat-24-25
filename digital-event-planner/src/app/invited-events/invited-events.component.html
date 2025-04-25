@@ -1,11 +1,26 @@
-<h2>Meghívott eseményeim</h2>
-<mat-list>
-  <mat-list-item *ngFor="let event of invitedEvents" (click)="openDetails(event)" style="cursor:pointer;">
-    <div>
-      <strong>{{ event.title }}</strong>
-      <div>{{ event.start | date:'short' }} – {{ event.end | date:'short' }}</div>
-      <div>Létrehozó: {{ event.createdBy }}</div>
-    </div>
-  </mat-list-item>
-</mat-list>
-<div *ngIf="!invitedEvents.length" style="margin-top:2rem;">Nincs meghívásod eseményre.</div>
+<app-navbar></app-navbar>
+<div class="invited-events-container">
+  <h2>Meghívott eseményeim</h2>
+
+  <div *ngIf="invitedEvents.length; else noEvents" class="cards-grid">
+    <mat-card
+      *ngFor="let ev of invitedEvents"
+      class="event-card"
+      (click)="openDetails(ev)"
+    >
+      <mat-card-header>
+        <mat-card-title>{{ ev.title }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ ev.start | date:'medium' }} – {{ ev.end | date:'medium' }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>Létrehozó:</strong> {{ ev.createdBy }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <ng-template #noEvents>
+    <p class="no-events">Nincs meghívásod eseményre.</p>
+  </ng-template>
+</div>

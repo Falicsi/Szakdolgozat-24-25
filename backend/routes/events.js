@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 // POST /api/events
 router.post('/', async (req, res) => {
   const { title, description, start, end, createdBy, invitedUsers } = req.body;
-  const event = new Event({ title, description, start, end, createdBy, invitedUsers });
+  const event = new Event({ title, description, category, resource, start, end, createdBy, invitedUsers });
   try {
     const saved = await event.save();
     res.status(201).json(saved);
