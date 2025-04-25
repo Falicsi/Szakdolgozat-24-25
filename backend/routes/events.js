@@ -4,6 +4,7 @@ const router       = express.Router();
 const Event        = require('../models/Event');
 const Invitation   = require('../models/Invitation');
 const Notification = require('../models/Notification');
+const User         = require('../models/User');
 const auth         = require('../middleware/auth');
 
 // POST /api/events – új esemény létrehozása
@@ -32,23 +33,25 @@ router.post('/', auth, async (req, res) => {
     const ev = new Event(evData);
     const saved = await ev.save();
 
-    // 1) Szervező automatikus accepted meghívása
+    // Szervező invitation (userId = createdBy)
     await Invitation.create({
       eventId: saved._id,
       userId:  createdBy,
       status:  'accepted'
     });
 
-    // 2) A többi meghívott pending státusszal
-    const others = invitedUsers.filter(uid => uid !== createdBy);
-    await Promise.all(others.map(async userId => {
+    // Meghívottak invitation-jei (emailből userId-t keresünk)
+    const others = invitedUsers.filter(email => email !== createdBy);
+    const users = await User.find({ email: { $in: others } });
+
+    await Promise.all(users.map(async user => {
       await Invitation.create({
         eventId: saved._id,
-        userId,
+        userId:  user._id.toString(),
         status: 'pending'
       });
       await Notification.create({
-        userId,
+        userId: user._id.toString(),
         eventId: saved._id,
         type: 'invitation',
         message: `You have been invited to "${saved.title}".`
@@ -95,8 +98,7 @@ router.put('/:id', auth, async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    // 1) Szervező meghívásának ellenőrzése:
-    // Ha még nincs Invitation createdBy-hoz, hozzuk létre accepted-ként
+    // 1) Szervező invitation-jának ellenőrzése
     const existsOrgInv = await Invitation.findOne({
       eventId: updated._id,
       userId:  oldEv.createdBy
@@ -109,10 +111,16 @@ router.put('/:id', auth, async (req, res) => {
       });
     }
 
-    // 2) Új meghívottak kezelése (akik még nem voltak):
-    const newlyAdded = invitedUsers.filter(
-      uid => !oldEv.invitedUsers.includes(uid)
-    ).filter(uid => uid !== oldEv.createdBy);
+    // 2) Meghívottak e-mailjeiből userId-k keresése
+    const others = invitedUsers.filter(email => email !== oldEv.createdBy);
+    const users = await User.find({ email: { $in: others } });
+    const userIds = users.map(u => u._id.toString());
+
+    // 3) Új meghívottak, akiknek még nincs invitation
+    const existingInvs = await Invitation.find({ eventId: updated._id });
+    const alreadyInvitedIds = existingInvs.map(inv => inv.userId);
+
+    const newlyAdded = userIds.filter(uid => !alreadyInvitedIds.includes(uid));
 
     await Promise.all(newlyAdded.map(async userId => {
       await Invitation.create({
@@ -150,6 +158,20 @@ router.get('/:id', auth, async (req, res) => {
     const ev = await Event.findById(req.params.id);
     if (!ev) return res.status(404).json({ message: 'Event not found' });
     res.json(ev);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const deleted = await Event.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    // Töröld a kapcsolódó invitation-öket is, ha kell:
+    await Invitation.deleteMany({ eventId: req.params.id });
+    res.json({ message: 'Event deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

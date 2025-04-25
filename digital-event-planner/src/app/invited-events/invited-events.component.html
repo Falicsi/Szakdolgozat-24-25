@@ -1,28 +1,28 @@
 <app-navbar> </app-navbar>
 <div class="invited-events-container">
-  <h2>Elfogadott eseményeim</h2>
+  <h2>Elfogadott vagy szervezett eseményeim</h2>
 
-  <div *ngIf="invitations.length; else noEvents" class="cards-grid">
+  <div *ngIf="allEvents.length; else noEvents" class="cards-grid">
     <mat-card
-      *ngFor="let inv of invitations"
+      *ngFor="let ev of allEvents"
       class="event-card"
-      (click)="openDetails(inv)"
+      (click)="openDetails(ev)"
     >
       <mat-card-header>
-        <mat-card-title>{{ inv.eventId.title }}</mat-card-title>
+        <mat-card-title>{{ ev.title }}</mat-card-title>
         <mat-card-subtitle>
-          {{ inv.eventId.start | date:'medium' }}
-          – 
-          {{ inv.eventId.end   | date:'medium' }}
+          {{ ev.start | date:'medium' }}
+          –
+          {{ ev.end   | date:'medium' }}
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <p><strong>Létrehozó:</strong> {{ inv.eventId.createdBy }}</p>
+        <p><strong>Létrehozó:</strong> {{ ev.createdBy }}</p>
       </mat-card-content>
     </mat-card>
   </div>
 
   <ng-template #noEvents>
-    <p class="no-events">Nincs elfogadott eseményed.</p>
+    <p class="no-events">Nincs elfogadott vagy szervezett eseményed.</p>
   </ng-template>
 </div>

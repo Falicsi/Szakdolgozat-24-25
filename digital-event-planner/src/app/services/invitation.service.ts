@@ -23,10 +23,7 @@ export class InvitationService {
   ) {}
 
   getByUser(userId: string): Observable<Invitation[]> {
-    return this.http.get<Invitation[]>(
-      `${this.apiUrl}?userId=${userId}`,
-      this.auth.authHeaders
-    );
+    return this.http.get<Invitation[]>(`${this.apiUrl}?userId=${userId}`, this.auth.authHeaders);
   }
 
   getByEvent(eventId: string): Observable<Invitation[]> {

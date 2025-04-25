@@ -59,20 +59,23 @@ export class CalendarComponent implements OnInit {
 
   private loadEvents(): void {
     this.eventService.getEvents().subscribe((es: EventModel[]) => {
-      this.events = es.map(e => ({
-        start: new Date(e.start),
-        end:   e.end ? new Date(e.end) : undefined,
-        title: e.title,
-        color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-        meta: {
-          _id:           e._id!,
-          description:   e.description || '',
-          createdBy:     e.createdBy || '',
-          invitedUsers:  e.invitedUsers || [],
-          resource:      e.resource || '',
-          category:      e.category || ''
-        }
-      }));
+      const currentUser = localStorage.getItem('email') || '';
+      this.events = es
+        .filter(e => e.createdBy === currentUser)
+        .map(e => ({
+          start: new Date(e.start),
+          end:   e.end ? new Date(e.end) : undefined,
+          title: e.title,
+          color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+          meta: {
+            _id:           e._id!,
+            description:   e.description || '',
+            createdBy:     e.createdBy || '',
+            invitedUsers:  e.invitedUsers || [],
+            resource:      e.resource || '',
+            category:      e.category || ''
+          }
+        }));
     });
   }
 

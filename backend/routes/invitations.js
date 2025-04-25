@@ -55,4 +55,17 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+// GET /api/invitations?eventId=... vagy ?userId=...
+router.get('/', auth, async (req, res) => {
+  try {
+    const filter = {};
+    if (req.query.eventId) filter.eventId = req.query.eventId;
+    if (req.query.userId)  filter.userId  = req.query.userId;
+    const invs = await Invitation.find(filter).populate('eventId');
+    res.json(invs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

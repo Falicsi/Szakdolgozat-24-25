@@ -31,7 +31,12 @@ export class InvitationsComponent implements OnInit {
 
   private load() {
     this.invService.getByUser(this.currentUserId).subscribe(inv => {
-      this.invitations = inv;
+      // Csak azok, ahol nem mi vagyunk a szervezők (meghívottként vagyunk jelen)
+      this.invitations = inv.filter(i =>
+        i.eventId &&
+        i.eventId.createdBy !== localStorage.getItem('email') &&
+        i.status !== 'accepted'
+      );
     });
   }
 
