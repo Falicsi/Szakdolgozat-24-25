@@ -16,7 +16,4 @@ const CategorySchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Gyors kereséshez indexelés névre
-CategorySchema.index({ name: 1 });
-
 module.exports = mongoose.model('Category', CategorySchema);

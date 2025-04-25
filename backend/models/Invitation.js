@@ -7,7 +7,7 @@ const InvitationSchema = new mongoose.Schema({
     required: true
   },
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref:  'User',
     required: true
   },

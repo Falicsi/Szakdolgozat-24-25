@@ -9,7 +9,7 @@ router.get('/', auth, async (req, res) => {
     const filter = {};
     if (req.query.eventId) filter.eventId = req.query.eventId;
     if (req.query.userId)  filter.userId  = req.query.userId;
-    const invs = await Invitation.find(filter).populate('eventId').populate('userId');
+    const invs = await Invitation.find(filter).populate('eventId'); // .populate('userId') törölve
     res.json(invs);
   } catch (err) {
     res.status(500).json({ message: err.message });

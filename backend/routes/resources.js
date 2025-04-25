@@ -4,7 +4,7 @@ const Resource = require('../models/Resource');
 const auth     = require('../middleware/auth');
 
 // GET /api/resources – összes forrás lista
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const filter = {};
     if (req.query.type) filter.type = req.query.type;
@@ -16,7 +16,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // GET /api/resources/:id
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const r = await Resource.findById(req.params.id);
     if (!r) return res.status(404).json({ message: 'Resource not found' });
@@ -27,7 +27,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // POST /api/resources – új forrás létrehozása
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const r = new Resource({
       name:        req.body.name,
@@ -44,7 +44,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 // PUT /api/resources/:id – forrás módosítása
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const updated = await Resource.findByIdAndUpdate(
       req.params.id,
@@ -64,7 +64,7 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 // DELETE /api/resources/:id – forrás törlése
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     await Resource.findByIdAndDelete(req.params.id);
     res.json({ message: 'Resource deleted' });

@@ -5,6 +5,8 @@
   <p><strong>Kezdés:</strong> {{ data.start | date:'full' }}</p>
   <p><strong>Befejezés:</strong> {{ data.end | date:'full' }}</p>
   <p><strong>Létrehozó:</strong> {{ data.meta.createdBy }}</p>
+  <p><strong>Erőforrás:</strong> {{ data.resource || '-' }}</p>
+  <p><strong>Kategória:</strong> {{ data.category || '-' }}</p>
   <p><strong>Meghívottak:</strong></p>
   <mat-list>
     <mat-list-item *ngFor="let u of data.meta.invitedUsers">

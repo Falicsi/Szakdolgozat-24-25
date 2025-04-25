@@ -24,6 +24,27 @@
     <textarea matInput formControlName="description" rows="2"></textarea>
   </mat-form-field>
 
+  <mat-form-field appearance="fill">
+    <mat-label>Erőforrás</mat-label>
+    <mat-select formControlName="resource" required>
+      <mat-option value="">-- Válassz erőforrást --</mat-option>
+      <mat-option value="online">Online (pl. Teams/Zoom)</mat-option>
+      <mat-option value="meeting-room">Általános tárgyaló</mat-option>
+      <mat-option *ngFor="let r of resources" [value]="r._id">{{ r.name }} ({{ r.type }})</mat-option>
+    </mat-select>
+  </mat-form-field>
+  
+  <mat-form-field appearance="fill">
+    <mat-label>Kategória</mat-label>
+    <mat-select formControlName="category" required>
+      <mat-option value="">-- Válassz kategóriát --</mat-option>
+      <mat-option value="meeting">Meeting</mat-option>
+      <mat-option value="workshop">Workshop</mat-option>
+      <mat-option value="training">Tréning</mat-option>
+      <mat-option *ngFor="let c of categories" [value]="c._id">{{ c.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <mat-form-field appearance="fill" class="full-width compact-field">
     <mat-label>Létrehozó</mat-label>
     <input matInput formControlName="createdBy" [readonly]="true" />

@@ -7,11 +7,11 @@ const eventSchema = new mongoose.Schema({
     required: true
   },
   category: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.Mixed,
     ref: 'Category',
   },
   resource: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.Mixed,
     ref: 'Resource',
   },
   start: {
@@ -30,10 +30,7 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  invitedUsers: {
-    type: [String], 
-    default: []
-  }
-}, { timestamps: true });
+  invitedUsers: [{ type: String }] // <-- E-mail címek tömbje
+});
 
 module.exports = mongoose.model('Event', eventSchema);

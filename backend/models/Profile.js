@@ -23,7 +23,4 @@ const ProfileSchema = new mongoose.Schema({
   timestamps: true     // createdAt, updatedAt
 });
 
-// Gyors lekérés userId alapján
-ProfileSchema.index({ userId: 1 }, { unique: true });
-
 module.exports = mongoose.model('Profile', ProfileSchema);

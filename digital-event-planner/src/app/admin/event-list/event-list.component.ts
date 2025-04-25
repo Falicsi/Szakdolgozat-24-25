@@ -39,7 +39,9 @@ export class EventListComponent implements OnInit {
         end:         new Date(e.end),
         description: e.description,
         createdBy:   e.createdBy,
-        invitedUsers:e.invitedUsers
+        invitedUsers:e.invitedUsers,
+        resource:    e.resource,
+        category:    e.category 
       },
       panelClass: 'event-dialog-panel'
     });
@@ -52,7 +54,9 @@ export class EventListComponent implements OnInit {
         end: result.end.toISOString(),
         description: result.description,
         createdBy: result.createdBy,
-        invitedUsers: result.invitedUsers
+        invitedUsers: result.invitedUsers,
+        resource:    result.resource,
+        category:    result.category 
       };
       this.eventService.updateEvent(updated).subscribe(saved => {
         this.events = this.events.map(x => x._id === saved._id ? saved : x);

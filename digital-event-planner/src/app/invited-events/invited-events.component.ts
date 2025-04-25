@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule }       from '@angular/common';
-import { MatCardModule }      from '@angular/material/card';
-import { MatDialog, MatDialogModule }    from '@angular/material/dialog';
-import { EventService, EventModel } from '../services/event.service';
-import { EventDetailsDialogComponent } from '../details/event-details-dialog/event-details-dialog.component';
+import { CommonModule }      from '@angular/common';
+import { MatCardModule }     from '@angular/material/card';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { NavbarComponent } from '../navbar/navbar.component';
+
+import {
+  InvitationService,
+  Invitation
+} from '../services/invitation.service';
+import { EventDetailsDialogComponent } from '../details/event-details-dialog/event-details-dialog.component';
 
 @Component({
   selector: 'app-invited-events',
@@ -13,43 +17,45 @@ import { NavbarComponent } from '../navbar/navbar.component';
     CommonModule,
     MatCardModule,
     MatDialogModule,
-    EventDetailsDialogComponent,
     NavbarComponent
   ],
-  providers: [MatDialog],
   templateUrl: './invited-events.component.html',
   styleUrls: ['./invited-events.component.scss']
 })
 export class InvitedEventsComponent implements OnInit {
-  invitedEvents: EventModel[] = [];
-  currentUserEmail = localStorage.getItem('email') || '';
+  invitations: Invitation[] = [];
+  currentUserId = localStorage.getItem('userId') || '';
 
   constructor(
-    private eventService: EventService,
+    private invitationService: InvitationService,
     private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    this.eventService.getEvents().subscribe(events => {
-      this.invitedEvents = events.filter(e =>
-        e.invitedUsers?.includes(this.currentUserEmail)
-      );
+    this.loadAcceptedInvitations();
+  }
+
+  private loadAcceptedInvitations(): void {
+    this.invitationService.getByUser(this.currentUserId).subscribe(allInv => {
+      // csak az 'accepted' státuszú meghívások
+      this.invitations = allInv.filter(inv => inv.status === 'accepted');
     });
   }
 
-  openDetails(event: EventModel) {
+  openDetails(inv: Invitation): void {
+    const ev = inv.eventId as any; // a backend populate-olja az eventet
     this.dialog.open(EventDetailsDialogComponent, {
       data: {
-        title: event.title,
-        start: new Date(event.start),
-        end:   new Date(event.end),
+        title:        ev.title,
+        start:        new Date(ev.start),
+        end:          new Date(ev.end),
         meta: {
-          _id:           event._id!,
-          description:   event.description!,
-          createdBy:     event.createdBy!,
-          invitedUsers:  event.invitedUsers!
+          _id:           ev._id,
+          description:   ev.description,
+          createdBy:     ev.createdBy,
+          invitedUsers:  ev.invitedUsers
         },
-        isOwner: event.createdBy === this.currentUserEmail
+        isOwner: ev.createdBy === localStorage.getItem('username')
       },
       panelClass: 'event-dialog-panel'
     });

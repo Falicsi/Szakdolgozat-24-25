@@ -37,13 +37,19 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.eventService.getEvents().subscribe(events => {
-      // a backendről kapott EventModel[] tömböt tároljuk
       this.events = events.map(e => ({
         start: new Date(e.start),
         end:   e.end ? new Date(e.end) : undefined,
         title: e.title,
         color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-        meta: { _id: e._id, description: e.description, createdBy: e.createdBy, invitedUsers: e.invitedUsers }
+        meta: {
+          _id:           e._id,
+          description:   e.description,
+          createdBy:     e.createdBy,
+          invitedUsers:  e.invitedUsers,
+          resource:      e.resource || '',
+          category:      e.category || ''
+        }
       }));
     });
     this.currentUsername = localStorage.getItem('username') || '';
@@ -61,7 +67,9 @@ export class CalendarComponent implements OnInit {
           _id:           e._id!,
           description:   e.description || '',
           createdBy:     e.createdBy || '',
-          invitedUsers:  e.invitedUsers || []
+          invitedUsers:  e.invitedUsers || [],
+          resource:      e.resource || '',
+          category:      e.category || ''
         }
       }));
     });
@@ -119,13 +127,18 @@ export class CalendarComponent implements OnInit {
       if (!result) return;
       const newEvent: EventModel = {
         title:        result.title,
-        start:        result.start.toISOString(),
-        end:          result.end  .toISOString(),
+        start:        result.start instanceof Date ? result.start.toISOString() : result.start,
+        end:          result.end   instanceof Date ? result.end.toISOString()   : result.end,
         description:  result.description,
         createdBy:    result.createdBy,
-        invitedUsers: result.invitedUsers
+        invitedUsers: result.invitedUsers,
+        resource:     result.resource,
+        category:     result.category
       };
-      this.eventService.createEvent(newEvent).subscribe(() => this.loadEvents());
+      this.eventService.createEvent(newEvent).subscribe({
+        next: () => this.loadEvents(),
+        error: err => console.error('Event creation failed:', err)
+      });
     });
   }
 
@@ -144,6 +157,8 @@ export class CalendarComponent implements OnInit {
           createdBy:     event.meta!.createdBy,
           invitedUsers:  event.meta!.invitedUsers
         },
+        resource: event.meta!.resource || '',    // <-- ADD THIS
+        category: event.meta!.category || '',    // <-- ADD THIS
         isOwner
       },
       panelClass: 'event-dialog-panel'
@@ -170,7 +185,9 @@ export class CalendarComponent implements OnInit {
           end:          event.end!,
           description:  event.meta!.description,
           createdBy:    event.meta!.createdBy,
-          invitedUsers: event.meta!.invitedUsers
+          invitedUsers: event.meta!.invitedUsers,
+          resource:     event.meta!.resource || '',   // <-- ADD THIS
+          category:     event.meta!.category || ''    // <-- ADD THIS
         },
         panelClass: 'event-dialog-panel'
       }
@@ -185,7 +202,9 @@ export class CalendarComponent implements OnInit {
         end:           result.end.toISOString(),
         description:   result.description,
         createdBy:     result.createdBy,
-        invitedUsers:  result.invitedUsers
+        invitedUsers:  result.invitedUsers,
+        resource:      result.resource,              // <-- ADD THIS
+        category:      result.category               // <-- ADD THIS
       };
       this.eventService.updateEvent(updated).subscribe(() => this.loadEvents());
     });

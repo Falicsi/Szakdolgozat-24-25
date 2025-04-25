@@ -15,7 +15,4 @@ const RoleSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Gyors keresés névre
-RoleSchema.index({ name: 1 });
-
 module.exports = mongoose.model('Role', RoleSchema);

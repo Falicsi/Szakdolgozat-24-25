@@ -30,7 +30,7 @@ const ResourceSchema = new mongoose.Schema({
 });
 
 // Gyors keresés névre és típusra
-ResourceSchema.index({ name: 1 });
+//ResourceSchema.index({ name: 1 });
 ResourceSchema.index({ type: 1 });
 
 module.exports = mongoose.model('Resource', ResourceSchema);

@@ -5,7 +5,7 @@ const Category = require('../models/Category');
 const auth     = require('../middleware/auth');
 
 // GET /api/categories – lista
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const cats = await Category.find().sort('name');
     res.json(cats);
@@ -15,7 +15,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // POST /api/categories – új kategória
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const cat = new Category({
       name:        req.body.name,
@@ -29,7 +29,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 // PUT /api/categories/:id – módosítás
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const updated = await Category.findByIdAndUpdate(
       req.params.id,
@@ -46,7 +46,7 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 // DELETE /api/categories/:id
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     await Category.findByIdAndDelete(req.params.id);
     res.json({ message: 'Category deleted' });
