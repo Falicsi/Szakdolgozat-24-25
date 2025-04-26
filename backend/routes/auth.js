@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const auth    = require('../middleware/auth'); 
+const auth = require('../middleware/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
 
 router.get('/users', async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().populate('role', 'name');
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: 'Hiba történt a felhasználók lekérésekor!' });
@@ -49,27 +49,52 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(400).json({ message: 'User not found' });
+    let user = await User.findOne({ email }).populate('role', 'name');
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    // Ha nincs szerepkör, dinamikusan hozzárendeljük az "organizer" role-t
+    if (!user.role) {
+      const Role = require('../models/Role');
+      const organizerRole = await Role.findOne({ name: 'organizer' });
+      if (organizerRole) {
+        user.role = organizerRole._id;
+        await user.save();
+        // Újratöltjük a user-t populate-tal
+        user = await User.findOne({ email }).populate('role', 'name');
+      } else {
+        return res.status(500).json({ message: 'Organizer szerepkör nem található!' });
       }
+    }
 
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-          return res.status(400).json({ message: 'Invalid credentials' });
-      }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
 
-      const token = jwt.sign(
-          { userId: user._id, email: user.email, username: user.username },
-          JWT_SECRET,
-          { expiresIn: '1h' }
-      );
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        username: user.username,
+        roleName: user.role.name
+      },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-      res.status(200).json({ message: 'Login successful', token, username: user.username, userId: user._id.toString() });
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      username: user.username,
+      userId: user._id.toString(),
+      roleName: user.role.name
+    });
 
   } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Server error' });
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -102,9 +127,9 @@ router.put('/users/:id', auth, async (req, res) => {
       { new: true }
     );
     res.json({
-      _id:      updated._id,
+      _id: updated._id,
       username: updated.username,
-      email:    updated.email
+      email: updated.email
     });
   } catch (err) {
     res.status(400).json({ message: err.message });

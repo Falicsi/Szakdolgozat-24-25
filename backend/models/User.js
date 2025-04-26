@@ -15,10 +15,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  roles: [{
+  role: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Role'
-  }]
+    ref: 'Role',
+    default: null
+  },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile',
+    default: null
+  },
 });
 
 const User = mongoose.model('User', userSchema);

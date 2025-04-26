@@ -3,24 +3,13 @@ const mongoose = require('mongoose');
 const ProfileSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref:  'User',
-    required: true,
-    unique: true       // egy userhez csak egy profil tartozhat
+    ref: 'User',
+    unique: true,
+    required: true
   },
-  avatarUrl: {
-    type: String,
-    default: ''        // link a profilképre
-  },
-  bio: {
-    type: String,
-    default: ''        // rövid bemutatkozó szöveg
-  },
-  timezone: {
-    type: String,
-    default: 'UTC'     // pl. 'Europe/Budapest'
-  }
-}, {
-  timestamps: true     // createdAt, updatedAt
-});
+  fullName: String,
+  avatarUrl: String,
+  bio:       String,
+}, { timestamps: true });
 
 module.exports = mongoose.model('Profile', ProfileSchema);

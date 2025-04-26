@@ -11,6 +11,7 @@ const notificationsRouter = require('./routes/notifications');
 const resourcesRouter     = require('./routes/resources');
 const rolesRouter         = require('./routes/roles');
 const profilesRouter      = require('./routes/profiles');
+const usersRouter = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,5 +28,6 @@ app.use('/api/notifications', notificationsRouter);
 app.use('/api/resources', resourcesRouter);
 app.use('/api/roles',         rolesRouter);
 app.use('/api/profiles',     profilesRouter);
+app.use('/api/users', usersRouter);
 
 app.listen(PORT, () => console.log(`Szerver fut a következő porton: ${PORT}`));

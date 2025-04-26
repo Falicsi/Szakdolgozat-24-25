@@ -7,6 +7,7 @@ import { UserListComponent } from './admin/user-list/user-list.component';
 import { EventListComponent }from './admin/event-list/event-list.component';
 import { LoginGuard } from './auth/login.guard';
 import { InvitationsComponent } from './invitations/invitations.component';
+import { AdminGuard } from './auth/admin.guard';
 
 export const APP_ROUTES: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -28,6 +29,7 @@ export const APP_ROUTES: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
+    canActivate: [AdminGuard], 
     children: [
       { path: '', redirectTo: 'users', pathMatch: 'full' },
       { path: 'users',  component: UserListComponent },

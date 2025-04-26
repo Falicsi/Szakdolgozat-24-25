@@ -98,30 +98,17 @@ router.put('/:id', auth, async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    // 1) Szervező invitation-jának ellenőrzése
-    const existsOrgInv = await Invitation.findOne({
-      eventId: updated._id,
-      userId:  oldEv.createdBy
-    });
-    if (!existsOrgInv) {
-      await Invitation.create({
-        eventId: updated._id,
-        userId:  oldEv.createdBy,
-        status:  'accepted'
-      });
-    }
-
-    // 2) Meghívottak e-mailjeiből userId-k keresése
+    // Meghívottak e-mailjeiből userId-k keresése
     const others = invitedUsers.filter(email => email !== oldEv.createdBy);
     const users = await User.find({ email: { $in: others } });
     const userIds = users.map(u => u._id.toString());
 
-    // 3) Új meghívottak, akiknek még nincs invitation
+    // Meghívottak Invitation-jei az eseményhez
     const existingInvs = await Invitation.find({ eventId: updated._id });
     const alreadyInvitedIds = existingInvs.map(inv => inv.userId);
 
+    // Új meghívottak (akik most kerültek be)
     const newlyAdded = userIds.filter(uid => !alreadyInvitedIds.includes(uid));
-
     await Promise.all(newlyAdded.map(async userId => {
       await Invitation.create({
         eventId: updated._id,
@@ -135,6 +122,13 @@ router.put('/:id', auth, async (req, res) => {
         message: `You have been invited to "${updated.title}".`
       });
     }));
+
+    // Meghívottak, akiket eltávolítottak (már nincs az invitedUsers-ben)
+    const removed = alreadyInvitedIds.filter(uid => !userIds.includes(uid));
+    await Invitation.deleteMany({
+      eventId: updated._id,
+      userId: { $in: removed }
+    });
 
     return res.json(updated);
   } catch (err) {

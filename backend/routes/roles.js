@@ -2,15 +2,20 @@ const express = require('express');
 const router  = express.Router();
 const Role    = require('../models/Role');
 const auth    = require('../middleware/auth');
+const permit = require('../middleware/permit');
 
-// GET /api/roles – lista
+// Mindenki lekérheti a szerepköröket
 router.get('/', auth, async (req, res) => {
-  try {
-    const roles = await Role.find().sort('name');
-    res.json(roles);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  const roles = await Role.find();
+  res.json(roles);
+});
+
+// ADMIN-only: új szerepkör létrehozása
+router.post('/', auth, permit('admin'), async (req, res) => {
+  const { name, description } = req.body;
+  const role = new Role({ name, description });
+  await role.save();
+  res.status(201).json(role);
 });
 
 // POST /api/roles – új szerepkör

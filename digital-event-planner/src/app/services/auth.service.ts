@@ -17,13 +17,14 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-    return this.http.post<{ token: string, username: string, userId: string, email?: string }>(
+    return this.http.post<{ token: string, username: string, userId: string, roleName: string, email?: string }>(
       `${this.apiUrl}/login`,
       { email, password }
     ).pipe(tap(res => {
       localStorage.setItem('token', res.token);
       localStorage.setItem('username', res.username);
       localStorage.setItem('userId', res.userId);
+      localStorage.setItem('roleName', res.roleName);
       if (res.email) {
         localStorage.setItem('email', res.email);
       }
@@ -33,6 +34,10 @@ export class AuthService {
   get authHeaders() {
     const token = localStorage.getItem('token') || '';
     return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
+  }
+
+  getRole(): string | null {
+    return localStorage.getItem('roleName');
   }
 
   saveToken(token: string) {
