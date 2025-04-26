@@ -27,6 +27,29 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.virtual('profileData', {
+  ref: 'Profile',
+  localField: '_id',
+  foreignField: 'userId',
+  justOne: true
+});
+
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON',   { virtuals: true });
+
+// Middleware: profil létrehozása user mentése után, ha még nincs
+userSchema.post('save', async function(doc, next) {
+  try {
+    const existing = await Profile.findOne({ user: doc._id });
+    if (!existing) {
+      await Profile.create({ user: doc._id });
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

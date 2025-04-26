@@ -10,6 +10,12 @@ const auth         = require('../middleware/auth');
 // POST /api/events – új esemény létrehozása
 router.post('/', auth, async (req, res) => {
   try {
+    // Csak organizer vagy admin hozhat létre eseményt
+    const role = req.user?.roleName;
+    if (role !== 'organizer' && role !== 'admin') {
+      return res.status(403).json({ message: 'Nincs jogosultság esemény létrehozásához.' });
+    }
+
     const {
       title,
       description = '',

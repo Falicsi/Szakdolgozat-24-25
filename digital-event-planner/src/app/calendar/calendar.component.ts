@@ -33,10 +33,11 @@ export class CalendarComponent implements OnInit {
   events: CalendarEvent[] = [];
   CalendarView = CalendarView;
   currentUsername = '';
+  canCreateEvent = false;
+
   constructor(private datePipe: DatePipe, private dialog: MatDialog, private eventService: EventService) {}
 
   ngOnInit(): void {
-    console.log('Stored token:', localStorage.getItem('token'));
     this.eventService.getEvents().subscribe(events => {
       this.events = events.map(e => ({
         start: new Date(e.start),
@@ -54,6 +55,8 @@ export class CalendarComponent implements OnInit {
       }));
     });
     this.currentUsername = localStorage.getItem('username') || '';
+    const role = localStorage.getItem('roleName');
+    this.canCreateEvent = role === 'organizer' || role === 'admin';
     this.loadEvents();
   }
 
@@ -104,6 +107,7 @@ export class CalendarComponent implements OnInit {
   }
 
   onDayClick(date: Date): void {
+    if (!this.canCreateEvent) return;
     const defaultDate = new Date(date);
     const now = new Date();
     const mins = now.getMinutes();

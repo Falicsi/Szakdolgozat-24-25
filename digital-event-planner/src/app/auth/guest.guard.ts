@@ -3,15 +3,15 @@ import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class AdminGuard implements CanActivate {
+export class GuestGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(): boolean {
-    const role = this.auth.getRole(); // JWT-ből olvassa ki
-    if (role === 'admin') {
+    if (!this.auth.getToken()) {
+      // nem bejelentkezett → továbbengedjük
       return true;
     }
-    // Nem admin, irány home vagy más oldal
+    // be van jelentkezve → ne lássa a login/registert, irány home
     this.router.navigate(['/home']);
     return false;
   }

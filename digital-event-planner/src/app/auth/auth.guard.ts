@@ -3,16 +3,15 @@ import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class AdminGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(): boolean {
-    const role = this.auth.getRole(); // JWT-ből olvassa ki
-    if (role === 'admin') {
+    if (this.auth.getToken()) {
       return true;
     }
-    // Nem admin, irány home vagy más oldal
-    this.router.navigate(['/home']);
+    // Ha nincs token, irány a login
+    this.router.navigate(['/login']);
     return false;
   }
 }
