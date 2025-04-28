@@ -1,0 +1,27 @@
+<div class="resource-management">
+    <h2>Erőforrások kezelése</h2>
+    <button mat-raised-button color="primary" (click)="openEditDialog()">Új forrás</button>
+  
+    <table mat-table [dataSource]="resources" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Név</th>
+        <td mat-cell *matCellDef="let r">{{ r.name }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Típus</th>
+        <td mat-cell *matCellDef="let r">{{ r.type }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Műveletek</th>
+        <td mat-cell *matCellDef="let r">
+          <button mat-button color="accent" (click)="openEditDialog(r)">Szerkesztés</button>
+          <button mat-button color="warn" (click)="deleteResource(r._id!)">Törlés</button>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>

@@ -11,6 +11,8 @@ import { GuestGuard } from './auth/guest.guard';
 import { AuthGuard } from './auth/auth.guard';
 import { AdminGuard } from './auth/admin.guard';
 import { ProfileComponent } from './profile/profile.component';
+import { CategoryListComponent } from './admin/category-list/category-list.component';
+import { ResourceListComponent } from './admin/resource-list/resource-list.component';
 
 export const APP_ROUTES: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -48,7 +50,9 @@ export const APP_ROUTES: Routes = [
     children: [
       { path: '', redirectTo: 'users', pathMatch: 'full' },
       { path: 'users', component: UserListComponent },
-      { path: 'events', component: EventListComponent }
+      { path: 'events', component: EventListComponent },
+      { path: 'categories', component: CategoryListComponent },
+      { path: 'resources', component: ResourceListComponent },
     ]
   },
   { path: '**', redirectTo: '/home' }

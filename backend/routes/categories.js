@@ -1,58 +1,65 @@
 // backend/routes/categories.js
-const express  = require('express');
-const router   = express.Router();
+const express = require('express');
+const router = express.Router();
 const Category = require('../models/Category');
-const auth     = require('../middleware/auth');
+const auth = require('../middleware/auth');
 
-// GET /api/categories – lista
-router.get('/', async (req, res) => {
-  try {
-    const cats = await Category.find().sort('name');
-    res.json(cats);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// POST /api/categories – új kategória
+// CREATE
 router.post('/', async (req, res) => {
   try {
-    const cat = new Category({
-      name:        req.body.name,
-      description: req.body.description || ''
-    });
-    const saved = await cat.save();
-    res.status(201).json(saved);
+    const cat = new Category(req.body)
+    await cat.save()
+    res.status(201).json(cat)
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ error: err.message })
   }
-});
+})
 
-// PUT /api/categories/:id – módosítás
+// READ ALL
+router.get('/', async (req, res) => {
+  try {
+    const list = await Category.find().sort('name')
+    res.json(list)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// READ ONE
+router.get('/:id', async (req, res) => {
+  try {
+    const cat = await Category.findById(req.params.id)
+    if (!cat) return res.status(404).json({ error: 'Not found' })
+    res.json(cat)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// UPDATE
 router.put('/:id', async (req, res) => {
   try {
-    const updated = await Category.findByIdAndUpdate(
+    const cat = await Category.findByIdAndUpdate(
       req.params.id,
-      {
-        name:        req.body.name,
-        description: req.body.description || ''
-      },
+      req.body,
       { new: true, runValidators: true }
-    );
-    res.json(updated);
+    )
+    if (!cat) return res.status(404).json({ error: 'Not found' })
+    res.json(cat)
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ error: err.message })
   }
-});
+})
 
-// DELETE /api/categories/:id
+// DELETE
 router.delete('/:id', async (req, res) => {
   try {
-    await Category.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Category deleted' });
+    const cat = await Category.findByIdAndDelete(req.params.id)
+    if (!cat) return res.status(404).json({ error: 'Not found' })
+    res.json({ message: 'Deleted' })
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message })
   }
-});
+})
 
 module.exports = router;

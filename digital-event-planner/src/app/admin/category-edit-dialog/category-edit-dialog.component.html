@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>{{ data._id ? 'Kategória szerkesztése' : 'Új kategória' }}</h1>
+<div mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <mat-label>Név</mat-label>
+    <input matInput [(ngModel)]="data.name" />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Leírás</mat-label>
+    <input matInput [(ngModel)]="data.description" />
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Mégse</button>
+  <button mat-raised-button color="primary" (click)="onSave()">Mentés</button>
+</div>

@@ -4,19 +4,19 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const bodyParser = require('body-parser');
-const connectDB    = require('./db');
+const connectDB = require('./db');
 const invitationsRouter = require('./routes/invitations');
-const categoriesRouter  = require('./routes/categories');
+const categoriesRouter = require('./routes/categories');
 const notificationsRouter = require('./routes/notifications');
-const resourcesRouter     = require('./routes/resources');
-const rolesRouter         = require('./routes/roles');
-const profilesRouter      = require('./routes/profiles');
+const resourcesRouter = require('./routes/resources');
+const rolesRouter = require('./routes/roles');
+const profilesRouter = require('./routes/profiles');
 const usersRouter = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-connectDB();  
+connectDB();
 
 app.use(cors());
 app.use(express.json());
@@ -26,8 +26,8 @@ app.use('/api/invitations', invitationsRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/resources', resourcesRouter);
-app.use('/api/roles',         rolesRouter);
-app.use('/api/profiles',     profilesRouter);
+app.use('/api/roles', rolesRouter);
+app.use('/api/profiles', profilesRouter);
 app.use('/api/users', usersRouter);
 
 app.listen(PORT, () => console.log(`Szerver fut a következő porton: ${PORT}`));

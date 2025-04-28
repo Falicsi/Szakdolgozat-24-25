@@ -81,10 +81,10 @@ export class EventDialogComponent implements OnInit {
     this.resourceService.getResources().subscribe({
       next: res => this.resources = res,
       error: err => console.error('Resource hiba:', err)
-    });
-    this.categoryService.getCategories().subscribe({
-      next: cats => this.categories = cats,
-      error: err => console.error('Category hiba:', err)
+    }); 
+    this.categoryService.getAll().subscribe({
+      next: (cats: Category[]) => this.categories = cats,
+      error: (err: any) => console.error('Category hiba:', err)
     });
 
     this.authService.getAllUsers().subscribe(users => {
