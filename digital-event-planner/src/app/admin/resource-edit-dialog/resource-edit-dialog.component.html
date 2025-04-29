@@ -1,38 +1,44 @@
 <h1 mat-dialog-title>
-    {{ data._id ? 'Forrás szerkesztése' : 'Új forrás' }}
-  </h1>
-  
-  <div mat-dialog-content>
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Név</mat-label>
-      <input matInput [(ngModel)]="data.name" placeholder="Forrás neve" />
-    </mat-form-field>
-  
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Típus</mat-label>
-      <input matInput [(ngModel)]="data.type" placeholder="Pl. Eszköz, Helyszín" />
-    </mat-form-field>
-  
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Kapacitás</mat-label>
-      <input matInput type="number" [(ngModel)]="data.capacity" />
-    </mat-form-field>
-  
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Helyszín</mat-label>
-      <input matInput [(ngModel)]="data.location" />
-    </mat-form-field>
-  
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Leírás</mat-label>
-      <textarea matInput rows="2" [(ngModel)]="data.description"></textarea>
-    </mat-form-field>
-  </div>
-  
-  <div mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="onCancel()">Mégse</button>
-    <button mat-flat-button color="primary" (click)="onSave()"
-            [disabled]="!data.name || !data.type">
-      Mentés
-    </button>
-  </div>
+  {{ data._id ? 'Forrás szerkesztése' : 'Új forrás' }}
+</h1>
+
+<div mat-dialog-content>
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Név *</mat-label>
+    <input matInput [(ngModel)]="data.name" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Típus *</mat-label>
+    <mat-select [(ngModel)]="data.type">
+      <mat-option value="">– válassz –</mat-option>
+      <mat-option value="room">Szoba</mat-option>
+      <mat-option value="virtual">Virtuális</mat-option>
+      <mat-option value="equipment">Eszköz</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Kapacitás</mat-label>
+    <input matInput type="number" [(ngModel)]="data.capacity" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Helyszín</mat-label>
+    <input matInput [(ngModel)]="data.location" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Leírás</mat-label>
+    <textarea matInput rows="2" [(ngModel)]="data.description"></textarea>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Mégse</button>
+  <button mat-flat-button color="primary"
+          (click)="onSave()"
+          [disabled]="!data.name || !data.type">
+    Mentés
+  </button>
+</div>
