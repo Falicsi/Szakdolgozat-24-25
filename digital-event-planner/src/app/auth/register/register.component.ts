@@ -27,10 +27,16 @@ export class RegisterComponent {
   password: string = '';
   confirmPassword: string = '';
   errorMessage: string = '';
+  passwordRequirements = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   register() {
+    if (!this.passwordRequirements.test(this.password)) {
+      this.errorMessage = 'A jelszónak legalább 8 karakterből kell állnia, tartalmaznia kell kis- és nagybetűt, számot és speciális karaktert.';
+      return;
+    }
+
     if (this.password !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match!';
       return;
