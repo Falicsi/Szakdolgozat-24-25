@@ -1,60 +1,82 @@
-// firestore.rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Általános: csak bejelentkezett felhasználók olvashatnak
-    match /{collection}/{docId} {
-      allow read:   if request.auth != null;
-      allow create: if request.auth != null;
-      allow update: if request.auth != null;
-      allow delete: if false;               // törléshez külön jogosultság
-    }
-
-    // users kollekció: saját dokumentum módosítása
+    // ----------------------------------------------------------------
+    // users kollekció
     match /users/{userId} {
-      allow read:   if request.auth != null;
-      allow create: if request.auth != null;
-      allow update: if request.auth.uid == userId;
-      allow delete: if false;
+      // bárki olvashatja saját adatait, de másét nem
+      allow get, list: if request.auth != null && request.auth.uid == userId;
+
+      // új user regisztrálása (pl. email/pw auth után)
+      allow create: if request.auth != null && request.auth.uid == request.resource.id;
+
+      // saját profil módosítása
+      allow update: if request.auth != null && request.auth.uid == userId;
+
+      // törölni csak admin törölhet
+      allow delete: if request.auth.token.admin == true;
     }
 
-    // roles: bárki olvashatja, csak admin írhatja
+    // ----------------------------------------------------------------
+    // roles kollekció
     match /roles/{roleId} {
-      allow read:   if request.auth != null;
-      allow create: if request.auth.token.admin == true;
-      allow update: if request.auth.token.admin == true;
-      allow delete: if request.auth.token.admin == true;
+      // minden bejelentkezett látja a szerepköröket
+      allow list, get: if request.auth != null;
+
+      // csak admin hozhat létre, módosíthat, törölhet
+      allow create, update, delete: if request.auth.token.admin == true;
+
+      // tiltás minden egyéb műveletre
+      allow read: if false;
     }
 
-    // categories, resources, events: admin írhatja
+    // ----------------------------------------------------------------
+    // categories kollekció
     match /categories/{catId} {
-      allow read:   if request.auth != null;
-      allow create: if request.auth.token.admin == true;
-      allow update: if request.auth.token.admin == true;
-      allow delete: if request.auth.token.admin == true;
+      allow list, get: if request.auth != null;
+      allow create, update, delete: if request.auth.token.admin == true;
     }
 
+    // ----------------------------------------------------------------
+    // resources kollekció
     match /resources/{resId} {
-      allow read:   if request.auth != null;
-      allow create: if request.auth.token.admin == true;
-      allow update: if request.auth.token.admin == true;
-      allow delete: if request.auth.token.admin == true;
+      allow list, get: if request.auth != null;
+      allow create, update, delete: if request.auth.token.admin == true;
     }
 
+    // ----------------------------------------------------------------
+    // events kollekció
     match /events/{eventId} {
-      allow read:   if request.auth != null;
-      allow create: if request.auth.token.admin == true;
-      allow update: if request.auth.token.admin == true;
+      allow list, get: if request.auth != null;
+      allow create, update, delete: if request.auth.token.admin == true;
+    }
+
+    // ----------------------------------------------------------------
+    // invitations kollekció
+    match /invitations/{invId} {
+      // a felhasználó csak a saját meghívóit láthatja
+      allow list, get: if request.auth != null && request.auth.uid == resource.data.userId;
+
+      // új meghívó létrehozása: bejelentkezett user, és a body.userId egyezzen az auth.uid-val
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.eventId is string
+                    && request.resource.data.status in ['pending','accepted','declined'];
+
+      // saját meghívó státuszát módosíthatja (pl. accept/decline)
+      allow update: if request.auth != null
+                    && request.auth.uid == resource.data.userId
+                    && request.resource.data.status in ['pending','accepted','declined'];
+
+      // admin törölheti bármely meghívót
       allow delete: if request.auth.token.admin == true;
     }
 
-    // invitations: a felhasználó csak a saját meghívóit láthatja és módosíthatja
-    match /invitations/{invId} {
-      allow read:   if request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null;
-      allow update: if request.auth.uid == resource.data.userId;
-      allow delete: if request.auth.token.admin == true;
+    // ----------------------------------------------------------------
+    // Default: minden más tiltva
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
