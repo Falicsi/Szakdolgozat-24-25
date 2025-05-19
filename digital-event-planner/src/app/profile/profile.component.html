@@ -9,7 +9,27 @@
       <h3>{{ profileData.fullName }}</h3>
       <p *ngIf="profileData.bio">{{ profileData.bio }}</p>
     </div>
+    <button mat-stroked-button color="primary" (click)="editMode = !editMode" style="margin-left:auto;">
+      {{ editMode ? 'Mégse' : 'Szerkesztés' }}
+    </button>
   </div>
+
+  <form *ngIf="editMode" [formGroup]="form" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+    <div class="file-upload">
+      <label for="avatar-upload">Profilkép feltöltése</label>
+      <input id="avatar-upload" type="file" (change)="onFileSelected($event)" accept="image/*" />
+    </div>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Bemutatkozás</mat-label>
+      <textarea matInput formControlName="bio" rows="3"></textarea>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || saving">
+      Mentés
+    </button>
+    <span class="message" *ngIf="message">{{ message }}</span>
+  </form>
 
   <div *ngIf="!profileData">
     <p>Nincs profil adat.</p>

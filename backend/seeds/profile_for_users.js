@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
-const Profile = require('../models/Profile');
+const Profile = require('../models/profile');
 
 mongoose.connect('mongodb://localhost:27017/digital_event_planner');
 

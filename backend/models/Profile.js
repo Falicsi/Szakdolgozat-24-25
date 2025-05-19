@@ -9,7 +9,7 @@ const ProfileSchema = new mongoose.Schema({
   },
   fullName: String,
   avatarUrl: String,
-  bio:       String,
+  bio: String,
 }, { timestamps: true });
 
-module.exports = mongoose.model('Profile', ProfileSchema);
+module.exports = mongoose.models.Profile || mongoose.model('Profile', ProfileSchema);

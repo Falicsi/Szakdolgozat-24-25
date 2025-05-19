@@ -10,3 +10,4 @@ node_modules
 digital-event-planner/src/environments/environment.prod.ts
 digital-event-planner/src/environments/environment.ts
 digital-event-planner/src/environments/sercret-firebase.ts
+/backend/uploads

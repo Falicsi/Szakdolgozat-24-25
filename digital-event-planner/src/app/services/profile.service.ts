@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface ProfileModel {
@@ -34,5 +34,12 @@ export class ProfileService {
   /** Saját profil mentése/frissítése */
   updateProfile(data: Partial<ProfileModel>): Observable<ProfileModel> {
     return this.http.put<ProfileModel>(this.apiUrl, data, this.authHeaders);
+  }
+
+  uploadAvatar(formData: FormData): Observable<string> {
+    // Feltételezve, hogy a backend /api/upload végpontja { url: string }-et ad vissza
+    return this.http.post<{ url: string }>('/api/upload', formData).pipe(
+      map(res => res.url)
+    );
   }
 }

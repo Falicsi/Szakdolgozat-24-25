@@ -1,17 +1,93 @@
 .profile-container {
     max-width: 600px;
     margin: 2rem auto;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem 2.5rem;
     display: flex;
     flex-direction: column;
+    gap: 1.5rem;
+    border: 1px solid var(--border);
   
-    mat-form-field {
-      width: 100%;
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
       margin-bottom: 1rem;
+      letter-spacing: 0.5px;
+    }
+  
+    .profile-summary {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+  
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--primary);
+        background: var(--background);
+      }
+  
+      h3 {
+        margin: 0 0 0.3rem 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: var(--text);
+      }
+      p {
+        margin: 0;
+        color: var(--text);
+        opacity: 0.85;
+      }
+    }
+  
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+  
+      mat-form-field {
+        width: 100%;
+        margin-bottom: 0;
+      }
+  
+      button {
+        align-self: flex-end;
+        background: var(--primary);
+        color: #fff;
+        border-radius: 6px;
+        padding: 0.7rem 2.2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        transition: background 0.2s;
+        margin-top: 0.5rem;
+        &:hover {
+          background: #1251a3;
+        }
+      }
     }
   
     .message {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
       color: green;
+      font-weight: 500;
+      font-size: 1rem;
     }
   }
   
+  @media (max-width: 700px) {
+    .profile-container {
+      padding: 1rem 0.5rem;
+    }
+    .profile-summary {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.7rem;
+    }
+  }
