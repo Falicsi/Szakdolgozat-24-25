@@ -6,17 +6,12 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const passwordRequirements = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
 router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
     return res.status(400).json({ message: 'Minden mező kitöltése kötelező!' });
-  }
-
-  if (!passwordRequirements.test(password)) {
-    return res.status(400).json({ message: 'A jelszónak legalább 8 karakterből kell állnia, tartalmaznia kell kis- és nagybetűt, számot és speciális karaktert.' });
   }
 
   try {

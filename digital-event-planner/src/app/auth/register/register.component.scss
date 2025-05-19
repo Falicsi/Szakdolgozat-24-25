@@ -88,28 +88,3 @@ $input-hover-color: #f1f3f4;
     }
   }
 }
-
-@media (max-width: 600px) {
-  .register-container {
-    min-height: unset;
-    padding: 1rem 0.5rem;
-
-    form {
-      max-width: 100vw;
-      padding: 1rem 0.5rem;
-      border-radius: 0;
-      box-shadow: none;
-    }
-    .error-message {
-      max-width: 100vw;
-      font-size: 0.95rem;
-      padding: 0.5rem 0.5rem;
-    }
-  }
-}
-
-@media (max-width: 900px) {
-  .register-container form {
-    max-width: 90vw;
-  }
-}

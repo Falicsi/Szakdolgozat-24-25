@@ -38,7 +38,7 @@ export class LoginComponent {
         this.router.navigate(['/home']);
       },
       (error) => {
-        this.errorMessage = error?.error?.message || 'Ismeretlen hiba történt!';
+        this.errorMessage = 'Invalid credentials, please try again!';
       }
     );
   }

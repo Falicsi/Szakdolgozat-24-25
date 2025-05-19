@@ -9,12 +9,11 @@ const eventSchema = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.Mixed,
     ref: 'Category',
-    required: true
   },
-  resources: [{
-    type: mongoose.Schema.Types.ObjectId,
+  resource: {
+    type: mongoose.Schema.Types.Mixed,
     ref: 'Resource',
-  }],
+  },
   start: {
     type: Date,
     required: true
