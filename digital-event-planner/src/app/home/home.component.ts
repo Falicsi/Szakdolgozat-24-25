@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { CalendarComponent } from '../calendar/calendar.component';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { MatIconModule } from '@angular/material/icon';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-home',

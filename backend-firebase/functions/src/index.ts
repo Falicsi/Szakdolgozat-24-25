@@ -1,21 +1,18 @@
-import { onRequest } from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
-
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
 import express from 'express';
+import cors from 'cors';
+import { firebaseAdmin as admin } from './firebase';
 
-admin.initializeApp();
-const app = express();
-app.use(express.json());
-
-// Import controllers
 import * as userCtrl from './controllers/userController';
 import * as roleCtrl from './controllers/roleController';
 import * as categoryCtrl from './controllers/categoryController';
 import * as resourceCtrl from './controllers/resourceController';
 import * as eventCtrl from './controllers/eventController';
 import * as invitationCtrl from './controllers/invitationController';
+
+const app = express();
+app.use(cors({ origin: true }));
+app.use(express.json());
 
 // Users
 app.get('/users', userCtrl.listUsers);
@@ -59,5 +56,4 @@ app.post('/invitations', invitationCtrl.createInvitation);
 app.put('/invitations/:id', invitationCtrl.updateInvitation);
 app.delete('/invitations/:id', invitationCtrl.deleteInvitation);
 
-// Expose as HTTPS Function
 export const api = functions.https.onRequest(app);

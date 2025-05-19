@@ -6,3 +6,7 @@ digital-event-planner/.angular/cache/19.1.4/digital-event-planner/vite/deps_ssr/
 /digital-event-planner/.angular
 /digital-event-planner/node_modules
 
+node_modules
+digital-event-planner/src/environments/environment.prod.ts
+digital-event-planner/src/environments/environment.ts
+digital-event-planner/src/environments/sercret-firebase.ts
