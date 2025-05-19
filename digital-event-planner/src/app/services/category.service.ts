@@ -1,38 +1,41 @@
+// Példa helyes category.service.ts-re
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 
+const API_BASE = environment.apiBaseUrl; // pl. 'http://localhost:3000/api'
+
 export interface Category {
-  _id?: string;
+  id?: string;
   name: string;
   description?: string;
+  color?: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private apiUrl = 'http://localhost:3000/api/categories';
+  private base = `${environment.apiBaseUrl}/categories`;
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.apiUrl);
+  listCategories(): Observable<Category[]> {               // korábban getAll()
+    return this.http.get<Category[]>(this.base);
   }
 
-  getById(id: string): Observable<Category> {
-    return this.http.get<Category>(`${this.apiUrl}/${id}`);
+  getCategory(id: string): Observable<Category> {         // korábban get()
+    return this.http.get<Category>(`${this.base}/${id}`);
   }
 
-  create(category: Category): Observable<Category> {
-    return this.http.post<Category>(this.apiUrl, category);
+  createCategory(data: Omit<Category, 'id'>): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(this.base, data);
   }
 
-  update(id: string, category: Category): Observable<Category> {
-    return this.http.put<Category>(`${this.apiUrl}/${id}`, category);
+  updateCategory(id: string, data: Partial<Category>): Observable<any> {
+    return this.http.put<any>(`${this.base}/${id}`, data);
   }
 
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteCategory(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.base}/${id}`);
   }
 }

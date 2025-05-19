@@ -30,7 +30,7 @@ export class CategoryListComponent implements OnInit {
   }
   
   loadCategories(): void {
-    this.categoryService.getAll().subscribe({
+    this.categoryService.listCategories().subscribe({
       next: cats => this.categories = cats,
       error: err => console.error('Kategóriák betöltése sikertelen:', err)
     });
@@ -50,9 +50,7 @@ export class CategoryListComponent implements OnInit {
 
   deleteCategory(id: string): void {
     if (confirm('Biztosan törölni szeretnéd?')) {
-      this.categoryService.delete(id).subscribe(() => {
-        this.loadCategories();
-      });
+      this.categoryService.deleteCategory(id).subscribe(() => this.loadCategories());
     }
   }
 }

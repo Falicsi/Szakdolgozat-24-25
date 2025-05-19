@@ -1,8 +1,12 @@
 // src/app/services/event.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { forkJoin, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+
+const API_BASE = environment.useFirebase ? `${environment.functionsUrl}/${environment.functionsRegion}-${environment.firebaseConfig.projectId}/api`: environment.apiBaseUrl;
 
 export interface EventModel {
   _id?: string;
@@ -56,6 +60,37 @@ export class EventService {
     return this.http.delete<void>(
       `${this.apiUrl}/${id}`,
       this.auth.authHeaders
+    );
+  }
+
+    /** Lekéri az összes kategóriát */
+  listCategories(): Observable<any[]> {
+    return this.http.get<any[]>(`${API_BASE}/categories`);
+  }
+
+  /** Lekéri az összes erőforrást */
+  listResources(): Observable<any[]> {
+    return this.http.get<any[]>(`${API_BASE}/resources`);
+  }
+
+  listEvents(): Observable<any[]> {
+    return this.getEvents();
+  }
+
+  listEventsWithNames(): Observable<any[]> {
+    return forkJoin({
+      events:    this.listEvents(),
+      categories:this.listCategories(),
+      resources: this.listResources()
+    }).pipe(
+      map(({ events, categories, resources }) =>
+        events.map((ev: any) => ({
+          ...ev,
+          categoryName: categories.find(c => c.id === ev.categoryId)?.name || '—',
+          resourceNames: (ev.resources||[])
+            .map((rid: string) => resources.find(r => r.id === rid)?.name || '—')
+        }))
+      )
     );
   }
 }

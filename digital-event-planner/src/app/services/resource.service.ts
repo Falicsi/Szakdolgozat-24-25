@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Resource {
-  _id?: string;
+  id?: string;
   name: string;
   type: string;
   capacity?: number;

@@ -6,3 +6,6 @@ digital-event-planner/.angular/cache/19.1.4/digital-event-planner/vite/deps_ssr/
 /digital-event-planner/.angular
 /digital-event-planner/node_modules
 
+/backend/uploads
+/node_modules
+/digital-event-planner/src/environments

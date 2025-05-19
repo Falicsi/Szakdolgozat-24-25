@@ -43,8 +43,8 @@ export class ResourceEditDialogComponent {
       location: this.data.location,
       description: this.data.description
     };
-    const call$ = this.data._id
-      ? this.resourceService.update(this.data._id, payload)
+    const call$ = this.data.id
+      ? this.resourceService.update(this.data.id, payload)
       : this.resourceService.create(payload);
 
     call$.subscribe({

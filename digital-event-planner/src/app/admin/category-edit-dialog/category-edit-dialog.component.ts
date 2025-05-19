@@ -33,10 +33,10 @@ export class CategoryEditDialogComponent {
   }
 
   onSave(): void {
-    if (this.data._id) {
-      this.categoryService.update(this.data._id, this.data).subscribe(() => this.dialogRef.close(true));
+    if (this.data.id) {
+      this.categoryService.updateCategory(this.data.id, this.data).subscribe(() => this.dialogRef.close(true));
     } else {
-      this.categoryService.create(this.data).subscribe(() => this.dialogRef.close(true));
+      this.categoryService.createCategory(this.data).subscribe(() => this.dialogRef.close(true));
     }
   }
 }

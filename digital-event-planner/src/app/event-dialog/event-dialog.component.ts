@@ -19,6 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../services/auth.service';
 import { ResourceService, Resource } from '../services/resource.service';
 import { CategoryService, Category } from '../services/category.service';
+import { EventService } from '../services/event.service';
 
 export interface EventDialogData {
   date: Date;
@@ -82,7 +83,7 @@ export class EventDialogComponent implements OnInit {
       next: res => this.resources = res,
       error: err => console.error('Resource hiba:', err)
     }); 
-    this.categoryService.getAll().subscribe({
+    this.categoryService.listCategories().subscribe({
       next: (cats: Category[]) => this.categories = cats,
       error: (err: any) => console.error('Category hiba:', err)
     });
