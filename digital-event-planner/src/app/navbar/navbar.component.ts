@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -33,11 +34,18 @@ export class NavbarComponent {
 
   /** Igaz, ha van érvényes JWT, azaz be van jelentkezve a user */
   get isLoggedIn(): boolean {
+    if (environment.useFirebase) {
+      return !!localStorage.getItem('firebaseUser');
+    }
     return !!this.auth.getToken();
   }
 
   /** Igaz, ha a bejelentkezett user role-ja 'admin' */
   get isAdmin(): boolean {
+    if (environment.useFirebase) {
+      // Firebase user role-t a Firestore-ból kell lekérni, vagy localStorage-ben tárolni
+      return localStorage.getItem('firebaseRole') === 'admin';
+    }
     return this.auth.getRole() === 'admin';
   }
 

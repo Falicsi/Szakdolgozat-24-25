@@ -235,4 +235,16 @@ export class ApiService {
       ? this.http.get<Invitation[]>(`${this.fbBase}/invitations?userId=${userId}`)
       : this.http.get<Invitation[]>(`${this.nodeBase}/invitations?userId=${userId}`);
   }
+
+  register(username: string, email: string, password: string): Observable<any> {
+    return this.useFB
+      ? this.http.post<any>(`${this.fbBase}/auth/register`, { username, email, password })
+      : this.http.post<any>(`${this.nodeBase}/auth/register`, { username, email, password });
+  }
+
+  login(email: string, password: string): Observable<any> {
+    return this.useFB
+      ? this.http.post<any>(`${this.fbBase}/auth/login`, { email, password })
+      : this.http.post<any>(`${this.nodeBase}/auth/login`, { email, password });
+  }
 }
