@@ -1,7 +1,6 @@
 import * as functions from 'firebase-functions';
 import express from 'express';
 import cors from 'cors';
-import { firebaseAdmin as admin } from './firebase';
 
 import * as userCtrl from './controllers/userController';
 import * as roleCtrl from './controllers/roleController';

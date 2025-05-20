@@ -1,16 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { User } from './api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'http://localhost:3000/api/auth/users';
+  private apiRoot = environment.useFirebase
+    ? `${environment.functionsUrl}/${environment.projectId}/${environment.functionsRegion}/api`
+    : environment.apiBaseUrl;
+
+  private usersUrl = `${this.apiRoot}/users`;
 
   constructor(private http: HttpClient) {}
 
-  getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>(this.usersUrl);
   }
 }
