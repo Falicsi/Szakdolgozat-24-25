@@ -11,6 +11,8 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { environment } from './environments/environment';
+import { connectFirestoreEmulator } from 'firebase/firestore';
+import { connectAuthEmulator } from 'firebase/auth';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -31,4 +33,13 @@ bootstrapApplication(AppComponent, {
       multi: true
     }
   ]
-}).catch((err) => console.error(err));
+})
+  .then(() => {
+    if (!environment.production) {
+      // Firestore emulátor
+      connectFirestoreEmulator(getFirestore(), 'localhost', 8080);
+      // Auth emulátor
+      connectAuthEmulator(getAuth(), 'http://localhost:9099');
+    }
+  })
+  .catch((err) => console.error(err));
