@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
+import { getAuth } from '@angular/fire/auth';
 
 @Injectable({ providedIn: 'root' })
 export class AdminGuard implements CanActivate {
@@ -9,17 +10,15 @@ export class AdminGuard implements CanActivate {
 
   async canActivate(): Promise<boolean> {
     if (environment.useFirebase) {
-      const userStr = localStorage.getItem('firebaseUser');
-      if (!userStr) {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
         this.router.navigate(['/home']);
         return false;
       }
-      const user = JSON.parse(userStr);
-      if (user && user.getIdTokenResult) {
-        const tokenResult = await user.getIdTokenResult();
-        if (tokenResult.claims && tokenResult.claims.admin) {
-          return true;
-        }
+      const tokenResult = await user.getIdTokenResult();
+      if (tokenResult.claims && tokenResult.claims['admin']) {
+        return true;
       }
       this.router.navigate(['/home']);
       return false;

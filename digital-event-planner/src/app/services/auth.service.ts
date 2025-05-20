@@ -42,17 +42,20 @@ export class AuthService {
   login(email: string, password: string): Observable<any> {
     if (environment.useFirebase) {
       return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
-        switchMap((cred: UserCredential) =>
-          // Lekérjük a Firestore user doc-ot, hogy szerepkört is tudjunk menteni
-          getDoc(doc(this.firestore, 'users', cred.user.uid)).then(snap => {
-            const data = snap.data() || {};
-            localStorage.setItem('firebaseUser', JSON.stringify({ uid: cred.user.uid, email, ...data }));
-            localStorage.setItem('firebaseRole', (data['roles'] && data['roles'][0]) || 'user');
-            localStorage.setItem('username', data['username'] || '');
-            localStorage.setItem('userId', cred.user.uid);
-            return { uid: cred.user.uid, email, ...data };
-          })
-        )
+        switchMap(async (cred: UserCredential) => {
+          // 1. Lekérjük a Firestore user doc-ot
+          const snap = await getDoc(doc(this.firestore, 'users', cred.user.uid));
+          const data = snap.data() || {};
+          // 2. Lekérjük a custom claim-eket
+          const tokenResult = await cred.user.getIdTokenResult();
+          // 3. Ha van admin claim, azt is eltároljuk
+          const isAdmin = !!tokenResult.claims['admin'];
+          localStorage.setItem('firebaseUser', JSON.stringify({ uid: cred.user.uid, email, ...data }));
+          localStorage.setItem('firebaseRole', isAdmin ? 'admin' : ((data['roles'] && data['roles'][0]) || 'user'));
+          localStorage.setItem('username', data['username'] || '');
+          localStorage.setItem('userId', cred.user.uid);
+          return { uid: cred.user.uid, email, ...data };
+        })
       );
     } else {
       // Node/Mongo backend

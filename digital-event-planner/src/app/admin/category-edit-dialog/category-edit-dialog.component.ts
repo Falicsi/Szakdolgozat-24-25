@@ -33,8 +33,9 @@ export class CategoryEditDialogComponent {
   }
 
   onSave(): void {
-    if (this.data._id) {
-      this.categoryService.update(this.data._id, this.data).subscribe(() => this.dialogRef.close(true));
+    const id = this.data._id || this.data.id;
+    if (id) {
+      this.categoryService.update(id, this.data).subscribe(() => this.dialogRef.close(true));
     } else {
       this.categoryService.create(this.data).subscribe(() => this.dialogRef.close(true));
     }

@@ -8,9 +8,11 @@ import * as categoryCtrl from './controllers/categoryController';
 import * as resourceCtrl from './controllers/resourceController';
 import * as eventCtrl from './controllers/eventController';
 import * as invitationCtrl from './controllers/invitationController';
+import { firebaseAuth, requireAdmin } from './middleware/firebaseAuth';
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:4200', }));
+app.use(cors({ origin: true })); // vagy origin: ['http://localhost:4200'], credentials: true
+app.options('*', cors());
 app.use(express.json());
 
 // Users
@@ -28,11 +30,11 @@ app.put('/roles/:id', roleCtrl.updateRole);
 app.delete('/roles/:id', roleCtrl.deleteRole);
 
 // Categories
-app.get('/categories', categoryCtrl.listCategories);
-app.get('/categories/:id', categoryCtrl.getCategory);
-app.post('/categories', categoryCtrl.createCategory);
-app.put('/categories/:id', categoryCtrl.updateCategory);
-app.delete('/categories/:id', categoryCtrl.deleteCategory);
+app.get('/categories', firebaseAuth, categoryCtrl.listCategories);
+app.get('/categories/:id', firebaseAuth, categoryCtrl.getCategory);
+app.post('/categories', firebaseAuth, requireAdmin, categoryCtrl.createCategory);
+app.put('/categories/:id', firebaseAuth, requireAdmin, categoryCtrl.updateCategory);
+app.delete('/categories/:id', firebaseAuth, requireAdmin, categoryCtrl.deleteCategory);
 
 // Resources
 app.get('/resources', resourceCtrl.listResources);

@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 
 export interface Category {
-  _id?: string;
+  _id?: string; // Mongo
+  id?: string;  // Firestore
   name: string;
   description?: string;
 }

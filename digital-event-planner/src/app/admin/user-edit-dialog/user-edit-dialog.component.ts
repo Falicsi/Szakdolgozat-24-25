@@ -7,7 +7,7 @@ import { MatInputModule }     from '@angular/material/input';
 import { MatButtonModule }    from '@angular/material/button';
 
 export interface UserDialogData {
-  _id:      string;
+  id?:      string; // vagy string | undefined
   username: string;
   email:    string;
 }
@@ -62,7 +62,7 @@ export class UserEditDialogComponent implements OnInit {
   }
   onSubmit(){
     if(this.form.valid){
-      this.dialogRef.close({ _id: this.data._id, ...this.form.value });
+      this.dialogRef.close({ id: this.data.id, ...this.form.value });
     }
   }
 }

@@ -122,20 +122,20 @@ export class ApiService {
       ? this.http.get<Category>(`${this.fbBase}/categories/${id}`)
       : this.http.get<Category>(`${this.nodeBase}/categories/${id}`);
   }
-  createCategory(data: Omit<Category, 'id'>): Observable<{ id: string }> {
+  createCategory(category: Category): Observable<{ id: string }> {
     return this.useFB
-      ? this.http.post<{ id: string }>(`${this.fbBase}/categories`, data)
-      : this.http.post<{ id: string }>(`${this.nodeBase}/categories`, data);
+      ? this.http.post<{ id: string }>(`${this.fbBase}/categories`, category)
+      : this.http.post<{ id: string }>(`${this.nodeBase}/categories`, category);
   }
-  updateCategory(id: string, data: Partial<Category>): Observable<any> {
+  updateCategory(id: string, category: Category): Observable<Category> {
     return this.useFB
-      ? this.http.put<any>(`${this.fbBase}/categories/${id}`, data)
-      : this.http.put<any>(`${this.nodeBase}/categories/${id}`, data);
+      ? this.http.put<Category>(`${this.fbBase}/categories/${id}`, category)
+      : this.http.put<Category>(`${this.nodeBase}/categories/${id}`, category);
   }
-  deleteCategory(id: string): Observable<any> {
+  deleteCategory(id: string): Observable<void> {
     return this.useFB
-      ? this.http.delete<any>(`${this.fbBase}/categories/${id}`)
-      : this.http.delete<any>(`${this.nodeBase}/categories/${id}`);
+      ? this.http.delete<void>(`${this.fbBase}/categories/${id}`)
+      : this.http.delete<void>(`${this.nodeBase}/categories/${id}`);
   }
 
   // ----- Resources -----

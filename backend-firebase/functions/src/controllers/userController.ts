@@ -2,15 +2,21 @@ import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import { db } from '../firebase';
 import { User } from '../types';
+import { getFirestore } from 'firebase-admin/firestore';
 
 const usersCol = db.collection('users');
 
-export const listUsers = async (_req: Request, res: Response): Promise<void> => {
-  const snap = await usersCol.get();
-  const users = snap.docs.map(d => ({ id: d.id, ...(d.data() as User) }));
-  res.json(users);
-  return;
-};
+export async function listUsers(req: Request, res: Response) {
+  try {
+    const snap = await getFirestore().collection('users').get();
+    console.log('Firestore users docs:', snap.docs.map(d => d.data())); // <-- EZT ADD HOZZÁ
+    const users = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json(users);
+  } catch (err) {
+    console.error('Hiba a userek lekérdezésekor:', err); // <-- EZT IS
+    res.status(500).json({ message: 'Hiba a userek lekérdezésekor', error: err });
+  }
+}
 
 export const getUser = async (req: Request, res: Response): Promise<void> => {
   const doc = await usersCol.doc(req.params.id).get();

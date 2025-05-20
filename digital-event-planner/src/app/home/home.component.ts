@@ -7,6 +7,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../services/api.service';
 import { environment } from '../../environments/environment';
+import { signOut } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-home',
@@ -41,11 +42,20 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
-    localStorage.removeItem('username');
-    localStorage.removeItem('userId');
+  async logout() {
+    if (environment.useFirebase) {
+      await signOut(this.authService['auth']); // vagy this.authService.auth, ha public
+      localStorage.removeItem('firebaseUser');
+      localStorage.removeItem('firebaseRole');
+      localStorage.removeItem('email');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('username');
+    } else {
+      localStorage.removeItem('token');
+      localStorage.removeItem('email');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userId');
+    }
     this.isAuthenticated = false;
     this.router.navigate(['/login']);
   }
