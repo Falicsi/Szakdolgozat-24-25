@@ -21,8 +21,8 @@ export interface EventItem {
   category?: string;
 }
 export interface Invitation {
-  id?: string;           // backend által adott azonosító
-  _id?: string;          // ha MongoDB-t használsz
+  id?: string;
+  _id?: string;
   eventId: string;
   userId: string;
   status: 'pending' | 'accepted' | 'declined';
@@ -65,6 +65,25 @@ export class ApiService {
     return this.useFB
       ? this.http.delete<any>(`${this.fbBase}/users/${id}`)
       : this.http.delete<any>(`${this.nodeBase}/users/${id}`);
+  }
+
+  // -- Profiles -- //
+  getProfile(): Observable<any> {
+    return this.useFB
+      ? this.http.get<any>(`${this.fbBase}/profile`)
+      : this.http.get<any>(`${this.nodeBase}/profile`);
+  }
+
+  updateProfile(data: any): Observable<any> {
+    return this.useFB
+      ? this.http.put<any>(`${this.fbBase}/profile`, data)
+      : this.http.put<any>(`${this.nodeBase}/profile`, data);
+  }
+
+  uploadAvatar(formData: FormData): Observable<string> {
+    return this.useFB
+      ? this.http.post<string>(`${this.fbBase}/profile/avatar`, formData)
+      : this.http.post<string>(`${this.nodeBase}/profile/avatar`, formData);
   }
 
   // ----- Roles -----
