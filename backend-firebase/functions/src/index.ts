@@ -10,7 +10,7 @@ import * as eventCtrl from './controllers/eventController';
 import * as invitationCtrl from './controllers/invitationController';
 
 const app = express();
-app.use(cors({ origin: true }));
+app.use(cors({ origin: 'http://localhost:4200', }));
 app.use(express.json());
 
 // Users
