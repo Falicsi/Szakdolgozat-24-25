@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
@@ -9,10 +9,13 @@ export class AuthGuard implements CanActivate {
 
   canActivate(): boolean {
     if (environment.useFirebase) {
-      // Firebase Auth ellenőrzés (később async is lehet)
-      return !!localStorage.getItem('firebaseUser');
+      const userStr = localStorage.getItem('firebaseUser');
+      if (userStr) {
+        return true;
+      }
+      this.router.navigate(['/login']);
+      return false;
     } else {
-      // JWT token ellenőrzés
       if (this.auth.getToken()) {
         return true;
       }

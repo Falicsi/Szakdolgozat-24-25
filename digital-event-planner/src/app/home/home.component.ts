@@ -6,6 +6,7 @@ import { CalendarComponent } from '../calendar/calendar.component';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../services/api.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -22,11 +23,21 @@ export class HomeComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    this.isAuthenticated = !!localStorage.getItem('token');
-    if (this.isAuthenticated) {
-      this.email = localStorage.getItem('email') || '';
-      this.username = localStorage.getItem('username') || '';
-      this.userId = localStorage.getItem('userId') || '';
+    if (environment.useFirebase) {
+      this.isAuthenticated = !!localStorage.getItem('firebaseUser');
+      if (this.isAuthenticated) {
+        const user = JSON.parse(localStorage.getItem('firebaseUser')!);
+        this.email = user.email || '';
+        this.username = user.username || '';
+        this.userId = user.uid || '';
+      }
+    } else {
+      this.isAuthenticated = !!localStorage.getItem('token');
+      if (this.isAuthenticated) {
+        this.email = localStorage.getItem('email') || '';
+        this.username = localStorage.getItem('username') || '';
+        this.userId = localStorage.getItem('userId') || '';
+      }
     }
   }
 

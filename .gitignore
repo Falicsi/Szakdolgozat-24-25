@@ -14,3 +14,4 @@ digital-event-planner/src/environments/sercret-firebase.ts
 database-debug.log
 firebase-debug.log
 firestore-debug.log
+/backend-firebase/seed

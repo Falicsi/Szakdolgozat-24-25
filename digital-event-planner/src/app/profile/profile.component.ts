@@ -104,11 +104,9 @@ export class ProfileComponent implements OnInit {
   // Dummy image upload, cseréld le a saját backend/upload API-ra!
   async uploadImage(file: File): Promise<string> {
     const resizedBlob = await this.resizeAndCompressImage(file, 500, 500, 0.8);
-    const formData = new FormData();
-    formData.append('file', resizedBlob, file.name);
-  
-    // Helyesen:
-    return await firstValueFrom(this.profileService.uploadAvatar(formData));
+    // Blob-ból File-t készítünk, hogy legyen neve
+    const uploadFile = new File([resizedBlob], file.name, { type: resizedBlob.type });
+    return await firstValueFrom(this.profileService.uploadAvatar(uploadFile));
   }
 
   private resizeAndCompressImage(file: File, maxWidth: number, maxHeight: number, quality: number): Promise<Blob> {
