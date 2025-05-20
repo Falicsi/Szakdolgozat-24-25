@@ -49,9 +49,10 @@ export class AuthService {
           // 2. Lekérjük a custom claim-eket
           const tokenResult = await cred.user.getIdTokenResult();
           // 3. Ha van admin claim, azt is eltároljuk
-          const isAdmin = !!tokenResult.claims['admin'];
+          const roles: string[] = data['roles'] || [];
+          const isAdmin = !!tokenResult.claims['admin'] || roles.includes('admin');
           localStorage.setItem('firebaseUser', JSON.stringify({ uid: cred.user.uid, email, ...data }));
-          localStorage.setItem('firebaseRole', isAdmin ? 'admin' : ((data['roles'] && data['roles'][0]) || 'user'));
+          localStorage.setItem('firebaseRole', isAdmin ? 'admin' : (roles[0] || 'user'));
           localStorage.setItem('username', data['username'] || '');
           localStorage.setItem('userId', cred.user.uid);
           return { uid: cred.user.uid, email, ...data };
