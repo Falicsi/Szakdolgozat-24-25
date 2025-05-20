@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { NavbarComponent } from '../../navbar/navbar.component';
@@ -13,15 +12,7 @@ import { NavbarComponent } from '../../navbar/navbar.component';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-
 export class RegisterComponent {
-  ngOnInit() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      this.router.navigate(['/home']);
-    }
-  }
-  
   username: string = '';
   email: string = '';
   password: string = '';
@@ -30,6 +21,12 @@ export class RegisterComponent {
   passwordRequirements = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
   constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit() {
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/home']);
+    }
+  }
 
   register() {
     if (!this.passwordRequirements.test(this.password)) {
@@ -43,7 +40,7 @@ export class RegisterComponent {
     }
 
     this.authService.register(this.username, this.email, this.password).subscribe(
-      (response) => {
+      () => {
         this.router.navigate(['/login']);
       },
       (error) => {

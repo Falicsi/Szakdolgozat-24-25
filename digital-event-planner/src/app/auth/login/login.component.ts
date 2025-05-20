@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { NavbarComponent } from '../../navbar/navbar.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,6 @@ import { NavbarComponent } from '../../navbar/navbar.component';
 })
 
 export class LoginComponent {
-  username: string = '';
   email: string = '';
   password: string = '';
   errorMessage: string = '';
@@ -22,19 +22,14 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    const token = localStorage.getItem('token');
-    if (token) {
+    if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
     }
   }
 
   login() {
     this.authService.login(this.email, this.password).subscribe(
-      (response) => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('email', this.email);
-        localStorage.setItem('username', response.username);
-        localStorage.setItem('userId', response.userId);
+      () => {
         this.router.navigate(['/home']);
       },
       (error) => {

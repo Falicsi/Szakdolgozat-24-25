@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { environment } from '../../environments/environment';
 import { Observable, from } from 'rxjs';
 
@@ -38,7 +37,6 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    private fns: AngularFireFunctions
   ) { }
 
   listUsers(): Observable<User[]> {
