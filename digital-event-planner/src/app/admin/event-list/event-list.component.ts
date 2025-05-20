@@ -58,7 +58,7 @@ export class EventListComponent implements OnInit {
         resource:    result.resource,
         category:    result.category 
       };
-      this.eventService.updateEvent(updated).subscribe(saved => {
+      this.eventService.updateEvent(updated._id!, updated).subscribe(saved => {
         this.events = this.events.map(x => x._id === saved._id ? saved : x);
       });
     });

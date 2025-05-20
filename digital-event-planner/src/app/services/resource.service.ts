@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
 export interface Resource {
   _id?: string;
@@ -13,44 +13,33 @@ export interface Resource {
 
 @Injectable({ providedIn: 'root' })
 export class ResourceService {
-  private apiUrl = 'http://localhost:3000/api/resources';
+  constructor(private api: ApiService) {}
 
-  constructor(private http: HttpClient) {}
-
-  private getAuthHeaders() {
-    const token = localStorage.getItem('token');
-    return token
-      ? { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) }
-      : {};
-  }
-
-  // READ ALL
   getAll(): Observable<Resource[]> {
-    return this.http.get<Resource[]>(this.apiUrl, this.getAuthHeaders());
+    return this.api.listResources();
   }
 
-  // alias a komponens hívásához
-  getResources(): Observable<Resource[]> {
-    return this.getAll();
-  }
-
-  // READ ONE
   getById(id: string): Observable<Resource> {
-    return this.http.get<Resource>(`${this.apiUrl}/${id}`, this.getAuthHeaders());
+    return this.api.getResource(id);
   }
 
-  // CREATE
-  create(resource: Resource): Observable<Resource> {
-    return this.http.post<Resource>(this.apiUrl, resource, this.getAuthHeaders());
+  create(resource: Omit<Resource, 'id'>): Observable<{ id: string }> {
+    return this.api.createResource(resource);
   }
 
-  // UPDATE
-  update(id: string, resource: Resource): Observable<Resource> {
-    return this.http.put<Resource>(`${this.apiUrl}/${id}`, resource, this.getAuthHeaders());
+  update(id: string, resource: Partial<Resource>): Observable<any> {
+    return this.api.updateResource(id, resource);
   }
 
-  // DELETE
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, this.getAuthHeaders());
+  delete(id: string): Observable<any> {
+    return this.api.deleteResource(id);
+  }
+
+  getResources(): Observable<Resource[]> {
+    return this.api.getResources();
+  }
+
+  getResourceByEventId(eventId: string): Observable<Resource[]> {
+    return this.api.getResourcesByEventId(eventId);
   }
 }

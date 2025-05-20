@@ -214,7 +214,7 @@ export class CalendarComponent implements OnInit {
         resource:      result.resource,              // <-- ADD THIS
         category:      result.category               // <-- ADD THIS
       };
-      this.eventService.updateEvent(updated).subscribe(() => this.loadEvents());
+      this.eventService.updateEvent(updated._id!, updated).subscribe(() => this.loadEvents());
     });
   }
 

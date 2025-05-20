@@ -51,16 +51,16 @@ export class InvitedEventsComponent implements OnInit {
   }
 
   private loadAllEvents(): void {
-    // Lekérjük a saját szervezésű eseményeket
     this.eventService.getEvents().subscribe(events => {
       this.ownEvents = events.filter(e => e.createdBy === this.currentUserEmail);
 
-      // Lekérjük az elfogadott meghívásokat
       this.invitationService.getByUser(this.currentUserId).subscribe(invs => {
         const acceptedInvs = invs.filter(inv => inv.status === 'accepted' && inv.eventId);
 
         // Kinyerjük az eseményeket az invitation-ökből
-        const invitedEvents = acceptedInvs.map(inv => inv.eventId);
+        const invitedEvents = events.filter(ev =>
+          acceptedInvs.some(inv => inv.eventId === ev._id || inv.eventId === ev.id)
+        );
 
         // Összefésüljük a kettőt, duplikáció nélkül (azonos _id alapján)
         const all = [...this.ownEvents, ...invitedEvents]
@@ -114,8 +114,7 @@ export class InvitedEventsComponent implements OnInit {
         });
         editRef.afterClosed().subscribe(editResult => {
           if (editResult && event._id) {
-            this.eventService.updateEvent({
-              _id: event._id,
+            this.eventService.updateEvent(event._id, {
               ...editResult
             }).subscribe(() => this.loadAllEvents());
           }

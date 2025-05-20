@@ -1,8 +1,8 @@
 // src/app/services/event.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { ApiService, EventItem } from './api.service';
 
 export interface EventModel {
   _id?: string;
@@ -18,44 +18,25 @@ export interface EventModel {
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
-  private apiUrl = 'http://localhost:3000/api/events';
+  constructor(private api: ApiService) {}
 
-  constructor(
-    private http: HttpClient,
-    private auth: AuthService
-  ) {}
-
-  private get authHeaders() {
-    const token = localStorage.getItem('token') || '';
-    return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
+  getEvents(): Observable<EventItem[]> {
+    return this.api.listEvents();
   }
 
-  getEvents(): Observable<EventModel[]> {
-    const token = localStorage.getItem('token') || '';
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<EventModel[]>(this.apiUrl, { headers });
+  getEvent(id: string): Observable<EventItem> {
+    return this.api.getEvent(id);
   }
 
-  createEvent(e: EventModel): Observable<EventModel> {
-    return this.http.post<EventModel>(
-      this.apiUrl,
-      e,
-      this.auth.authHeaders
-    );
+  createEvent(event: Omit<EventItem, 'id'>): Observable<{ id: string }> {
+    return this.api.createEvent(event);
   }
 
-  updateEvent(e: EventModel): Observable<EventModel> {
-    return this.http.put<EventModel>(
-      `${this.apiUrl}/${e._id}`,
-      e,
-      this.auth.authHeaders
-    );
+  updateEvent(id: string, event: Partial<EventItem>): Observable<any> {
+    return this.api.updateEvent(id, event);
   }
 
-  deleteEvent(id: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}/${id}`,
-      this.auth.authHeaders
-    );
+  deleteEvent(id: string): Observable<any> {
+    return this.api.deleteEvent(id);
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
 export interface Category {
   _id?: string;
@@ -12,27 +13,25 @@ export interface Category {
   providedIn: 'root'
 })
 export class CategoryService {
-  private apiUrl = 'http://localhost:3000/api/categories';
-
-  constructor(private http: HttpClient) {}
+  constructor(private api: ApiService) {}
 
   getAll(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.apiUrl);
+    return this.api.listCategories();
   }
 
   getById(id: string): Observable<Category> {
-    return this.http.get<Category>(`${this.apiUrl}/${id}`);
+    return this.api.getCategory(id);
   }
 
-  create(category: Category): Observable<Category> {
-    return this.http.post<Category>(this.apiUrl, category);
+  create(category: Category): Observable<{ id: string }> {
+    return this.api.createCategory(category);
   }
 
   update(id: string, category: Category): Observable<Category> {
-    return this.http.put<Category>(`${this.apiUrl}/${id}`, category);
+    return this.api.updateCategory(id, category);
   }
 
   delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.api.deleteCategory(id);
   }
 }

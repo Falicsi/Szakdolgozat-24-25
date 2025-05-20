@@ -4,23 +4,42 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { environment } from '../../environments/environment';
 import { Observable, from } from 'rxjs';
 
-export interface User       { id?: string; name: string; email: string; roles: string[]; }
-export interface Role       { id?: string; name: string; description?: string; }
-export interface Category   { id?: string; name: string; color?: string; }
-export interface Resource   { id?: string; name: string; type: string; description?: string; url?: string; metadata?: any; }
-export interface EventItem  { id?: string; title: string; date: string; categoryId: string; resources: string[]; }
-export interface Invitation { id?: string; eventId: string; userId: string; status: string; }
+export interface User { id?: string; name: string; email: string; roles: string[]; }
+export interface Role { id?: string; name: string; description?: string; }
+export interface Category { id?: string; name: string; color?: string; }
+export interface Resource { id?: string; name: string; type: string; description?: string; url?: string; metadata?: any; }
+export interface EventItem {
+  id?: string;
+  _id?: string;
+  title: string;
+  description?: string;
+  start: string;
+  end: string;
+  createdBy?: string;
+  invitedUsers?: string[];
+  resource?: string;
+  category?: string;
+}
+export interface Invitation {
+  id?: string;           // backend által adott azonosító
+  _id?: string;          // ha MongoDB-t használsz
+  eventId: string;
+  userId: string;
+  status: 'pending' | 'accepted' | 'declined';
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private useFB      = environment.useFirebase;
-  private nodeBase   = environment.apiBaseUrl;
-  private fbBase     = `${environment.functionsUrl}/${environment.functionsRegion}-${environment.firebaseConfig.projectId}/api`;
+  private useFB = environment.useFirebase;
+  private nodeBase = environment.apiBaseUrl;
+  private fbBase = `${environment.functionsUrl}/${environment.projectId}/${environment.functionsRegion}/api`;
 
   constructor(
     private http: HttpClient,
-    private fns:  AngularFireFunctions
-  ) {}
+    private fns: AngularFireFunctions
+  ) { }
 
   listUsers(): Observable<User[]> {
     return this.useFB
@@ -128,6 +147,16 @@ export class ApiService {
       ? this.http.delete<any>(`${this.fbBase}/resources/${id}`)
       : this.http.delete<any>(`${this.nodeBase}/resources/${id}`);
   }
+  getResources(): Observable<Resource[]> {
+    return this.useFB
+      ? this.http.get<Resource[]>(`${this.fbBase}/resources`)
+      : this.http.get<Resource[]>(`${this.nodeBase}/resources`);
+  }
+  getResourcesByEventId(eventId: string): Observable<Resource[]> {
+    return this.useFB
+      ? this.http.get<Resource[]>(`${this.fbBase}/resources/event/${eventId}`)
+      : this.http.get<Resource[]>(`${this.nodeBase}/resources/event/${eventId}`);
+  }
 
   // ----- Events -----
   listEvents(): Observable<EventItem[]> {
@@ -181,5 +210,10 @@ export class ApiService {
     return this.useFB
       ? this.http.delete<any>(`${this.fbBase}/invitations/${id}`)
       : this.http.delete<any>(`${this.nodeBase}/invitations/${id}`);
+  }
+  getInvitationsByUserId(userId: string): Observable<Invitation[]> {
+    return this.useFB
+      ? this.http.get<Invitation[]>(`${this.fbBase}/invitations?userId=${userId}`)
+      : this.http.get<Invitation[]>(`${this.nodeBase}/invitations?userId=${userId}`);
   }
 }
