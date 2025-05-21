@@ -28,15 +28,15 @@
     <mat-label>Erőforrás</mat-label>
     <mat-select formControlName="resource" required>
       <mat-option value="">-- Válassz erőforrást --</mat-option>
-      <mat-option *ngFor="let r of resources" [value]="r._id">{{ r.name }} ({{ r.type }})</mat-option>
+      <mat-option *ngFor="let r of resources" [value]="r._id || r.id">{{ r.name }} ({{ r.type }})</mat-option>
     </mat-select>
   </mat-form-field>
-  
+
   <mat-form-field appearance="fill">
     <mat-label>Kategória</mat-label>
     <mat-select formControlName="category" required>
       <mat-option value="">-- Válassz kategóriát --</mat-option>
-      <mat-option *ngFor="let c of categories" [value]="c._id">{{ c.name }}</mat-option>
+      <mat-option *ngFor="let c of categories" [value]="c._id || c.id">{{ c.name }}</mat-option>
     </mat-select>
   </mat-form-field>
 

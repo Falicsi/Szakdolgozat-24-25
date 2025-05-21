@@ -4,6 +4,7 @@ import { ApiService } from './api.service';
 
 export interface Resource {
   _id?: string;
+  id?: string; 
   name: string;
   type: string;
   capacity?: number;
