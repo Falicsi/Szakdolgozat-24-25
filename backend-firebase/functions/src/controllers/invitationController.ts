@@ -23,9 +23,8 @@ export const getInvitation = async (req: Request, res: Response): Promise<void> 
 };
 
 export const createInvitation = async (req: Request, res: Response): Promise<void> => {
-  const data = req.body as Omit<Invitation, 'createdAt' | 'updatedAt'>;
-  const now  = admin.firestore.FieldValue.serverTimestamp();
-  const ref  = await invitationsCol.add({ ...data, createdAt: now, updatedAt: now });
+  const data = req.body as Invitation;
+  const ref  = await invitationsCol.add(data);
   res.status(201).json({ id: ref.id });
   return;
 };
@@ -39,7 +38,11 @@ export const updateInvitation = async (req: Request, res: Response): Promise<voi
 };
 
 export const deleteInvitation = async (req: Request, res: Response): Promise<void> => {
-  await invitationsCol.doc(req.params.id).delete();
-  res.status(204).end();
-  return;
+  try {
+    await invitationsCol.doc(req.params.id).delete();
+    res.status(204).end();
+  } catch (err) {
+    console.error('Meghívó törlés hiba:', err);
+    res.status(500).json({ message: 'Delete failed', error: (err as any).message });
+  }
 };

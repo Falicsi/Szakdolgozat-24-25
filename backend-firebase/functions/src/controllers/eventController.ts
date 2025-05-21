@@ -23,23 +23,25 @@ export const getEvent = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const createEvent = async (req: Request, res: Response): Promise<void> => {
-  const data = req.body as Omit<Event, 'createdAt' | 'updatedAt'>;
-  const now  = admin.firestore.FieldValue.serverTimestamp();
-  const ref  = await eventsCol.add({ ...data, createdAt: now, updatedAt: now });
+  const data = req.body as Event;
+  const ref  = await eventsCol.add(data);
   res.status(201).json({ id: ref.id });
   return;
 };
 
 export const updateEvent = async (req: Request, res: Response): Promise<void> => {
   const data: Partial<Event> = req.body;
-  data.updatedAt = admin.firestore.FieldValue.serverTimestamp() as any;
   await eventsCol.doc(req.params.id).set(data, { merge: true });
   res.json({ id: req.params.id });
   return;
 };
 
 export const deleteEvent = async (req: Request, res: Response): Promise<void> => {
-  await eventsCol.doc(req.params.id).delete();
-  res.status(204).end();
-  return;
+  try {
+    await eventsCol.doc(req.params.id).delete();
+    res.status(204).end();
+  } catch (err) {
+    console.error('Esemény törlés hiba:', err);
+    res.status(500).json({ message: 'Delete failed', error: (err as any).message });
+  }
 };

@@ -6,7 +6,9 @@ import {
   HttpHandler,
   HttpEvent
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { getAuth } from 'firebase/auth';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -14,15 +16,18 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Klónozzuk a requestet, hozzáadva az Authorization headert
-      const authReq = req.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
-      });
-      return next.handle(authReq);
+    // Csak akkor adjuk hozzá, ha Firebase Auth-ot használunk
+    const user = getAuth().currentUser;
+    if (user) {
+      return from(user.getIdToken()).pipe(
+        switchMap(token => {
+          const authReq = req.clone({
+            setHeaders: { Authorization: `Bearer ${token}` }
+          });
+          return next.handle(authReq);
+        })
+      );
     }
-    // Ha nincs token, így továbbengedjük
     return next.handle(req);
   }
 }

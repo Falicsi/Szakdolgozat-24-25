@@ -11,7 +11,6 @@ import { CalendarComponent } from './calendar/calendar.component';
   standalone: true,
   imports: [
     RouterModule,
-    HttpClientModule,
     CommonModule,
     CalendarComponent
   ],
@@ -22,13 +21,6 @@ export class AppComponent implements OnInit {
   constructor(private userService: UserService) {}
 
   ngOnInit() {
-    this.userService.getUsers().subscribe(
-      users => {
-        console.log('Regisztrált felhasználók:', users);
-      },
-      error => {
-        console.error('Hiba történt a felhasználók lekérésekor:', error);
-      }
-    );
+
   }
 }

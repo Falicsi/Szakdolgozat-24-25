@@ -29,23 +29,25 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
-  const data = req.body as Omit<User, 'createdAt' | 'updatedAt'>;
-  const now  = admin.firestore.FieldValue.serverTimestamp();
-  const ref  = await usersCol.add({ ...data, createdAt: now, updatedAt: now });
+  const data = req.body as User;
+  const ref  = await usersCol.add(data);
   res.status(201).json({ id: ref.id });
   return;
 };
 
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
   const data: Partial<User> = req.body;
-  data.updatedAt = admin.firestore.FieldValue.serverTimestamp() as any;
   await usersCol.doc(req.params.id).set(data, { merge: true });
   res.json({ id: req.params.id });
   return;
 };
 
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
-  await usersCol.doc(req.params.id).delete();
-  res.status(204).end();
-  return;
+  try {
+    await usersCol.doc(req.params.id).delete();
+    res.status(204).end();
+  } catch (err) {
+    console.error('Felhasználó törlés hiba:', err);
+    res.status(500).json({ message: 'Delete failed', error: (err as any).message });
+  }
 };
