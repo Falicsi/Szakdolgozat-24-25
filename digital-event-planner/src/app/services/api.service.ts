@@ -230,8 +230,8 @@ export class ApiService {
   }
   getInvitationsByUserId(userId: string): Observable<Invitation[]> {
     return this.useFB
-      ? this.http.get<Invitation[]>(`${this.fbBase}/invitations?userId=${userId}`)
-      : this.http.get<Invitation[]>(`${this.nodeBase}/invitations?userId=${userId}`);
+      ? this.http.get<Invitation[]>(`${this.fbBase}/invitations/user/${userId}`)
+      : this.http.get<Invitation[]>(`${this.nodeBase}/invitations/user/${userId}`);
   }
 
   register(username: string, email: string, password: string): Observable<any> {

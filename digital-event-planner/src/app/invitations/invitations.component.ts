@@ -5,6 +5,8 @@ import { MatTableModule }       from '@angular/material/table';
 import { MatButtonModule }      from '@angular/material/button';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { InvitationService, Invitation } from '../services/invitation.service';
+import { AuthService } from '../services/auth.service';
+import { EventService, EventModel } from '../services/event.service';
 
 @Component({
   selector: 'app-invitations',
@@ -19,33 +21,44 @@ import { InvitationService, Invitation } from '../services/invitation.service';
   styleUrls: ['./invitations.component.scss']
 })
 export class InvitationsComponent implements OnInit {
-  invitations: Invitation[] = [];
+  invitations: (Invitation & { eventTitle?: string })[] = [];
   displayedColumns = ['event', 'status', 'actions'];
-  currentUserId = localStorage.getItem('userId') || '';
 
-  constructor(private invService: InvitationService) {}
+  constructor(
+    private invService: InvitationService,
+    private eventService: EventService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.load();
-  }
+    const currentUserEmail = this.authService.getCurrentUserEmail();
+    if (!currentUserEmail) return;
 
-  private load() {
-    this.invService.getByUser(this.currentUserId).subscribe(inv => {
-      // Csak azok, ahol nem mi vagyunk a szervezők (meghívottként vagyunk jelen)
-      this.invitations = inv.filter(i =>
-        i.userId === this.currentUserId &&
-        i.status !== 'accepted'
-      );
+    // Lekérjük az összes eseményt és meghívást
+    this.eventService.getEvents().subscribe((events: EventModel[]) => {
+      this.invService.getByUser(currentUserEmail).subscribe(invs => {
+        // Meghívásokhoz hozzárendeljük az esemény címét
+        this.invitations = invs
+          .filter(inv => inv.status === 'pending')
+          .map(inv => ({
+            ...inv,
+            eventTitle: events.find(ev => (ev._id || ev.id) === inv.eventId)?.title || '—'
+          }));
+      });
     });
   }
 
   accept(inv: Invitation) {
-    this.invService.updateStatus(inv._id!, 'accepted')
-      .subscribe(() => this.load());
+    const id = inv._id || inv.id;
+    if (!id) return;
+    this.invService.updateStatus(id, 'accepted')
+      .subscribe(() => this.ngOnInit());
   }
 
   decline(inv: Invitation) {
-    this.invService.updateStatus(inv._id!, 'declined')
-      .subscribe(() => this.load());
+    const id = inv._id || inv.id;
+    if (!id) return;
+    this.invService.updateStatus(id, 'declined')
+      .subscribe(() => this.ngOnInit());
   }
 }

@@ -25,8 +25,9 @@ export class EventListComponent implements OnInit {
   }
 
   delete(eventId: string) {
+    if (!confirm('Biztosan törlöd ezt az eseményt?')) return;
     this.eventService.deleteEvent(eventId).subscribe(() => {
-      this.events = this.events.filter(e => e._id !== eventId);
+      this.events = this.events.filter(e => (e._id || (e as any).id) !== eventId);
     });
   }
 
@@ -49,6 +50,7 @@ export class EventListComponent implements OnInit {
       if (!result) return;
       const updated: EventModel = { 
         _id: e._id,
+        id: e.id,
         title: result.title,
         start: result.start.toISOString(),
         end: result.end.toISOString(),
@@ -58,8 +60,10 @@ export class EventListComponent implements OnInit {
         resource:    result.resource,
         category:    result.category 
       };
-      this.eventService.updateEvent(updated._id!, updated).subscribe(saved => {
-        this.events = this.events.map(x => x._id === saved._id ? saved : x);
+      const eventId = e._id || e.id;
+      if (!eventId) return; // <-- Hibakezelés!
+      this.eventService.updateEvent(eventId, updated).subscribe(saved => {
+        this.events = this.events.map(x => (x._id || x.id) === (saved._id || saved.id) ? saved : x);
       });
     });
   }

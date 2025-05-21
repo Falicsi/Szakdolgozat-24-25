@@ -3,6 +3,7 @@ import { CommonModule }      from '@angular/common';
 import { MatCardModule }     from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { environment } from '../../environments/environment';
 
 import {
   InvitationService,
@@ -13,6 +14,7 @@ import { EventDetailsDialogComponent } from '../details/event-details-dialog/eve
 import { ResourceService, Resource } from '../services/resource.service';
 import { CategoryService, Category } from '../services/category.service';
 import { EventDialogComponent } from '../event-dialog/event-dialog.component';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-invited-events',
@@ -41,10 +43,12 @@ export class InvitedEventsComponent implements OnInit {
     private eventService: EventService,
     private resourceService: ResourceService,
     private categoryService: CategoryService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService // <-- ADD THIS
   ) {}
 
   ngOnInit(): void {
+    this.currentUserEmail = this.authService.getCurrentUserEmail() || '';
     this.resourceService.getAll().subscribe(res => this.resources = res);
     this.categoryService.getAll().subscribe(cats => this.categories = cats);
     this.loadAllEvents();
@@ -54,19 +58,22 @@ export class InvitedEventsComponent implements OnInit {
     this.eventService.getEvents().subscribe(events => {
       this.ownEvents = events.filter(e => e.createdBy === this.currentUserEmail);
 
-      this.invitationService.getByUser(this.currentUserId).subscribe(invs => {
+      this.invitationService.getByUser(this.currentUserEmail).subscribe(invs => {
         const acceptedInvs = invs.filter(inv => inv.status === 'accepted' && inv.eventId);
 
-        // Kinyerjük az eseményeket az invitation-ökből
+        // Meghívott események csak accepted invitation alapján
         const invitedEvents = events.filter(ev =>
-          acceptedInvs.some(inv => inv.eventId === ev._id || inv.eventId === ev.id)
+          acceptedInvs.some(inv => inv.eventId === (ev._id || (ev as any).id))
         );
 
-        // Összefésüljük a kettőt, duplikáció nélkül (azonos _id alapján)
-        const all = [...this.ownEvents, ...invitedEvents]
-          .filter((event, index, self) =>
-            event && self.findIndex(e => e._id === event._id) === index
-          );
+        // Saját + elfogadott események duplikáció nélkül (id vagy _id alapján)
+        const all = [...this.ownEvents, ...invitedEvents].filter(
+          (event, index, self) =>
+            !!event &&
+            self.findIndex(e =>
+              (e._id || (e as any).id) === (event._id || (event as any).id)
+            ) === index
+        );
 
         this.allEvents = all;
       });
@@ -74,8 +81,8 @@ export class InvitedEventsComponent implements OnInit {
   }
 
   openDetails(event: any): void {
-    const resourceName = this.resources.find(r => r._id === event.resource)?.name || '-';
-    const categoryName = this.categories.find(c => c._id === event.category)?.name || '-';
+    const resourceName = this.resources.find(r => (r._id || r.id) === event.resource)?.name || '-';
+    const categoryName = this.categories.find(c => (c._id || c.id) === event.category)?.name || '-';
 
     const dialogRef = this.dialog.open(EventDetailsDialogComponent, {
       data: {
@@ -113,9 +120,13 @@ export class InvitedEventsComponent implements OnInit {
           panelClass: 'event-dialog-panel'
         });
         editRef.afterClosed().subscribe(editResult => {
-          if (editResult && event._id) {
-            this.eventService.updateEvent(event._id, {
-              ...editResult
+          if (editResult) {
+            // Mindig legyen benne az _id!
+            const eventId = event._id || event.id;
+            if (!eventId) return;
+            this.eventService.updateEvent(eventId, {
+              ...editResult,
+              _id: eventId // biztosan legyen benne
             }).subscribe(() => this.loadAllEvents());
           }
         });

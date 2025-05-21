@@ -14,7 +14,7 @@ export class AuthService {
     private api: ApiService,
     private auth: Auth,
     private firestore: Firestore
-  ) {}
+  ) { }
 
   register(username: string, email: string, password: string): Observable<any> {
     if (environment.useFirebase) {
@@ -43,18 +43,17 @@ export class AuthService {
     if (environment.useFirebase) {
       return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
         switchMap(async (cred: UserCredential) => {
-          // 1. Lekérjük a Firestore user doc-ot
           const snap = await getDoc(doc(this.firestore, 'users', cred.user.uid));
           const data = snap.data() || {};
-          // 2. Lekérjük a custom claim-eket
           const tokenResult = await cred.user.getIdTokenResult();
-          // 3. Ha van admin claim, azt is eltároljuk
           const roles: string[] = data['roles'] || [];
           const isAdmin = !!tokenResult.claims['admin'] || roles.includes('admin');
+          // --- EZT ADD HOZZÁ ---
           localStorage.setItem('firebaseUser', JSON.stringify({ uid: cred.user.uid, email, ...data }));
+          localStorage.setItem('email', email);
+          localStorage.setItem('userId', cred.user.uid);
           localStorage.setItem('firebaseRole', isAdmin ? 'admin' : (roles[0] || 'user'));
           localStorage.setItem('username', data['username'] || '');
-          localStorage.setItem('userId', cred.user.uid);
           return { uid: cred.user.uid, email, ...data };
         })
       );

@@ -122,13 +122,15 @@ export class EventDialogComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
     const { title, start, end, description, createdBy, invitedUsers, resource, category } = this.form.value;
+    // Szervező NE legyen benne a meghívottak között!
+    const filteredInvitedUsers = (invitedUsers || []).filter((email: string) => email !== createdBy);
     this.dialogRef.close({
       title,
       start: new Date(start),
       end: new Date(end),
       description,
       createdBy,
-      invitedUsers,
+      invitedUsers: filteredInvitedUsers,
       resource,
       category
     });

@@ -32,9 +32,13 @@ export interface User {
   
   export interface Event {
     title: string;
-    date: FirebaseFirestore.Timestamp;
-    categoryId: string;    // Category doc ID
-    resources: string[];   // Resource doc ID-k
+    start: string;                // ISO string vagy Timestamp, ha időintervallum kell
+    end: string;                  // ISO string vagy Timestamp
+    description?: string;
+    categoryId?: string;          // opcionális, ha nem kötelező
+    resources?: string[];         // opcionális, ha nem kötelező
+    createdBy: string;            // <-- EZ KELL
+    invitedUsers: string[];       // <-- EZ KELL
     createdAt: FirebaseFirestore.Timestamp;
     updatedAt: FirebaseFirestore.Timestamp;
   }
@@ -46,4 +50,3 @@ export interface User {
     createdAt: FirebaseFirestore.Timestamp;
     updatedAt: FirebaseFirestore.Timestamp;
   }
-  

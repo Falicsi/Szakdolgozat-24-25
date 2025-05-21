@@ -18,6 +18,8 @@ import { EventDialogComponent, EventDialogData } from '../event-dialog/event-dia
 import { EventService, EventModel } from '../services/event.service';
 import { EventDetailsDialogComponent, EventDetailsData } from '../details/event-details-dialog/event-details-dialog.component';
 import { MatIcon } from '@angular/material/icon';
+import { InvitationService, Invitation } from '../services/invitation.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-calendar',
@@ -34,51 +36,58 @@ export class CalendarComponent implements OnInit {
   CalendarView = CalendarView;
   currentUsername = '';
   canCreateEvent = false;
+  invitations: Invitation[] = [];
 
-  constructor(private datePipe: DatePipe, private dialog: MatDialog, private eventService: EventService) {}
+  constructor(
+    private datePipe: DatePipe,
+    private dialog: MatDialog,
+    private eventService: EventService,
+    private invitationService: InvitationService,
+    private authService: AuthService // <-- ADD THIS
+  ) {}
 
   ngOnInit(): void {
-    this.eventService.getEvents().subscribe(events => {
-      this.events = events.map(e => ({
-        start: new Date(e.start),
-        end:   e.end ? new Date(e.end) : undefined,
-        title: e.title,
-        color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-        meta: {
-          _id:           e._id,
-          description:   e.description,
-          createdBy:     e.createdBy,
-          invitedUsers:  e.invitedUsers,
-          resource:      e.resource || '',
-          category:      e.category || ''
-        }
-      }));
-    });
     this.currentUsername = localStorage.getItem('username') || '';
     const role = localStorage.getItem('roleName');
     this.canCreateEvent = role === 'organizer' || role === 'admin';
     this.loadEvents();
   }
 
+  /** Csak a szervező vagy elfogadott meghívott láthatja az eseményt */
   private loadEvents(): void {
-    this.eventService.getEvents().subscribe((es: EventModel[]) => {
-      const currentUser = localStorage.getItem('email') || '';
-      this.events = es
-        .filter(e => e.createdBy === currentUser)
-        .map(e => ({
-          start: new Date(e.start),
-          end:   e.end ? new Date(e.end) : undefined,
-          title: e.title,
-          color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-          meta: {
-            _id:           e._id!,
-            description:   e.description || '',
-            createdBy:     e.createdBy || '',
-            invitedUsers:  e.invitedUsers || [],
-            resource:      e.resource || '',
-            category:      e.category || ''
-          }
-        }));
+    const currentUserEmail = this.authService.getCurrentUserEmail();
+    if (!currentUserEmail) {
+      console.warn('Nincs bejelentkezett felhasználó vagy nincs email!');
+      this.events = [];
+      return;
+    }
+
+    this.eventService.getEvents().subscribe((allEvents: EventModel[]) => {
+      this.invitationService.getByUser(currentUserEmail).subscribe((invs: Invitation[]) => {
+        const acceptedEventIds = invs
+          .filter(inv => inv.status === 'accepted')
+          .map(inv => inv.eventId);
+
+        this.events = allEvents
+          .filter(ev =>
+            ev.createdBy === currentUserEmail ||
+            acceptedEventIds.includes((ev._id || ev.id) ?? '')
+          )
+          .map(ev => ({
+            title: ev.title,
+            start: new Date(ev.start),
+            end:   new Date(ev.end),
+            color: { primary: '#1976d2', secondary: '#e3f2fd' },
+            meta: {
+              _id: ev._id,
+              description: ev.description,
+              createdBy: ev.createdBy,
+              invitedUsers: ev.invitedUsers,
+              resource: ev.resource,
+              category: ev.category
+            }
+          }));
+      });
     });
   }
 
@@ -144,8 +153,91 @@ export class CalendarComponent implements OnInit {
         category:     result.category
       };
       this.eventService.createEvent(newEvent).subscribe({
-        next: () => this.loadEvents(),
+        next: (res) => {
+          // Esemény létrejött, hozzunk létre meghívásokat is
+          // this.createInvitationsForEvent(res.id, newEvent);
+        },
         error: err => console.error('Event creation failed:', err)
+      });
+    });
+  }
+
+  /** Meghívások létrehozása új eseményhez */
+  private createInvitationsForEvent(eventId: string, event: EventModel) {
+    // EZT AZ EGÉSZ FÜGGVÉNYT NE HÍVD, vagy hagyd üresen!
+  }
+
+  /** Meghívások frissítése esemény módosításakor */
+  private updateInvitationsForEvent(eventId: string, updatedEvent: EventModel) {
+    // 1. Lekérjük az összes invitation-t ehhez az eseményhez
+    this.invitationService.list().subscribe(invs => {
+      const eventInvs = invs.filter(inv => inv.eventId === eventId);
+      const invitedUserIds = (updatedEvent.invitedUsers || []);
+
+      // Meghívottak, akik már nem szerepelnek a listában: töröljük a meghívásukat
+      eventInvs
+        .filter(inv => inv.userId !== updatedEvent.createdBy && !invitedUserIds.includes(inv.userId))
+        .forEach(inv => this.invitationService.delete(inv._id!).subscribe());
+
+      // Meghívottak, akik újak: létrehozzuk a meghívást
+      invitedUserIds
+        .filter(uid => !eventInvs.some(inv => inv.userId === uid))
+        .forEach(uid => {
+          this.invitationService.create({
+            eventId,
+            userId: uid,
+            status: 'pending'
+          }).subscribe();
+        });
+
+      // Frissítjük a naptárt
+      this.loadEvents();
+    });
+  }
+
+  /** Meghívások törlése esemény törlésekor */
+  private deleteInvitationsForEvent(eventId: string) {
+    this.invitationService.list().subscribe(invs => {
+      invs.filter(inv => inv.eventId === eventId)
+        .forEach(inv => this.invitationService.delete(inv._id!).subscribe());
+    });
+  }
+
+  private openEditDialog(event: CalendarEvent & { meta?: any }): void {
+    const ref = this.dialog.open<EventDialogComponent, EventDialogData>(
+      EventDialogComponent,
+      {
+        data: {
+          date:         event.start,
+          title:        event.title,
+          start:        event.start,
+          end:          event.end!,
+          description:  event.meta!.description,
+          createdBy:    event.meta!.createdBy,
+          invitedUsers: event.meta!.invitedUsers,
+          resource:     event.meta!.resource || '',
+          category:     event.meta!.category || ''
+        },
+        panelClass: 'event-dialog-panel'
+      }
+    );
+
+    ref.afterClosed().subscribe(result => {
+      if (!result) return;
+      const updated: EventModel = {
+        _id:           event.meta!._id,
+        title:         result.title,
+        start:         result.start.toISOString(),
+        end:           result.end.toISOString(),
+        description:   result.description,
+        createdBy:     result.createdBy,
+        invitedUsers:  result.invitedUsers,
+        resource:      result.resource,
+        category:      result.category
+      };
+      this.eventService.updateEvent(updated._id!, updated).subscribe(() => {
+        // Meghívások frissítése
+        this.updateInvitationsForEvent(updated._id!, updated);
       });
     });
   }
@@ -165,8 +257,8 @@ export class CalendarComponent implements OnInit {
           createdBy:     event.meta!.createdBy,
           invitedUsers:  event.meta!.invitedUsers
         },
-        resource: event.meta!.resource || '',    // <-- ADD THIS
-        category: event.meta!.category || '',    // <-- ADD THIS
+        resource: event.meta!.resource || '',
+        category: event.meta!.category || '',
         isOwner
       },
       panelClass: 'event-dialog-panel'
@@ -177,62 +269,32 @@ export class CalendarComponent implements OnInit {
         this.openEditDialog(event);
       }
       if (res?.delete && isOwner) {
-        this.eventService.deleteEvent(event.meta._id).subscribe(() => this.loadEvents());
+        this.eventService.deleteEvent(event.meta._id).subscribe(() => {
+          // Meghívások törlése
+          this.deleteInvitationsForEvent(event.meta._id);
+          this.loadEvents();
+        });
       }
     });
-  }
-
-  private openEditDialog(event: CalendarEvent & { meta?: any }): void {
-    const ref = this.dialog.open<EventDialogComponent, EventDialogData>(
-      EventDialogComponent,
-      {
-        data: {
-          date:         event.start,
-          title:        event.title,
-          start:        event.start,
-          end:          event.end!,
-          description:  event.meta!.description,
-          createdBy:    event.meta!.createdBy,
-          invitedUsers: event.meta!.invitedUsers,
-          resource:     event.meta!.resource || '',   // <-- ADD THIS
-          category:     event.meta!.category || ''    // <-- ADD THIS
-        },
-        panelClass: 'event-dialog-panel'
-      }
-    );
-
-    ref.afterClosed().subscribe(result => {
-      if (!result) return;
-      const updated: EventModel = {
-        _id:           event.meta!._id,
-        title:         result.title,
-        start:         result.start.toISOString(),
-        end:           result.end.toISOString(),
-        description:   result.description,
-        createdBy:     result.createdBy,
-        invitedUsers:  result.invitedUsers,
-        resource:      result.resource,              // <-- ADD THIS
-        category:      result.category               // <-- ADD THIS
-      };
-      this.eventService.updateEvent(updated._id!, updated).subscribe(() => this.loadEvents());
-    });
-  }
-
-  onTimeSlotClick(date: Date): void {
-    this.onDayClick(date);
   }
 
   get headerTitle(): string {
     if (this.view === CalendarView.Month) {
-      return this.datePipe.transform(this.viewDate, 'MMMM yyyy')!;
+      return this.datePipe.transform(this.viewDate, 'yyyy. MMMM')!;
     }
     if (this.view === CalendarView.Week) {
-      const start = this.datePipe.transform(this.viewDate, 'MMM d');
-      const end   = this.datePipe.transform(this.endOfWeek(this.viewDate), 'MMM d, yyyy');
+      const start = this.datePipe.transform(this.viewDate, 'MMM d')!;
+      const end = this.datePipe.transform(
+        new Date(this.viewDate.getFullYear(), this.viewDate.getMonth(), this.viewDate.getDate() + 6),
+        'MMM d, yyyy'
+      )!;
       return `${start} – ${end}`;
     }
-    // day view
+    // Nap nézet
     return this.datePipe.transform(this.viewDate, 'fullDate')!;
   }
 
+  onTimeSlotClick(date: Date): void {
+  this.onDayClick(date);
+}
 }

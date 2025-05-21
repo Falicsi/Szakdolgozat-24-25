@@ -31,10 +31,8 @@ export const createInvitation = async (req: Request, res: Response): Promise<voi
 
 export const updateInvitation = async (req: Request, res: Response): Promise<void> => {
   const data: Partial<Invitation> = req.body;
-  data.updatedAt = admin.firestore.FieldValue.serverTimestamp() as any;
   await invitationsCol.doc(req.params.id).set(data, { merge: true });
   res.json({ id: req.params.id });
-  return;
 };
 
 export const deleteInvitation = async (req: Request, res: Response): Promise<void> => {
@@ -45,4 +43,11 @@ export const deleteInvitation = async (req: Request, res: Response): Promise<voi
     console.error('Meghívó törlés hiba:', err);
     res.status(500).json({ message: 'Delete failed', error: (err as any).message });
   }
+};
+
+export const getInvitationsByUser = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.params.userId;
+  const snap = await invitationsCol.where('userId', '==', userId).get();
+  const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as Invitation) }));
+  res.json(items);
 };

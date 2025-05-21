@@ -6,6 +6,7 @@ import { ApiService, EventItem } from './api.service';
 
 export interface EventModel {
   _id?: string;
+  id?: string; // <-- EZT ADD HOZZÁ!
   title: string;
   description?: string;
   start: string;

@@ -48,8 +48,7 @@ app.delete('/events/:id', firebaseAuth, requireAdmin, eventCtrl.deleteEvent);
 // Invitations
 app.get('/invitations', invitationCtrl.listInvitations);
 app.get('/invitations/:id', invitationCtrl.getInvitation);
-app.post('/invitations', invitationCtrl.createInvitation);
+app.get('/invitations/user/:userId', invitationCtrl.getInvitationsByUser);
 app.put('/invitations/:id', invitationCtrl.updateInvitation);
-app.delete('/invitations/:id', firebaseAuth, requireAdmin, invitationCtrl.deleteInvitation);
 
 export const api = functions.https.onRequest(app);
