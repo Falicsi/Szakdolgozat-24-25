@@ -50,3 +50,12 @@ export interface User {
     createdAt: FirebaseFirestore.Timestamp;
     updatedAt: FirebaseFirestore.Timestamp;
   }
+  
+  export interface Profile {
+    userId: string;                          // A user Firestore doc ID-ja
+    fullName: string;
+    avatarUrl?: string;
+    bio?: string;
+    createdAt: FirebaseFirestore.Timestamp;
+    updatedAt: FirebaseFirestore.Timestamp;
+  }

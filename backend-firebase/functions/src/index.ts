@@ -8,6 +8,7 @@ import * as categoryCtrl from './controllers/categoryController';
 import * as resourceCtrl from './controllers/resourceController';
 import * as eventCtrl from './controllers/eventController';
 import * as invitationCtrl from './controllers/invitationController';
+import * as profileCtrl from './controllers/profileController';
 import { firebaseAuth, requireAdmin } from './middleware/firebaseAuth';
 
 const app = express();
@@ -50,5 +51,8 @@ app.get('/invitations', invitationCtrl.listInvitations);
 app.get('/invitations/:id', invitationCtrl.getInvitation);
 app.get('/invitations/user/:userId', invitationCtrl.getInvitationsByUser);
 app.put('/invitations/:id', invitationCtrl.updateInvitation);
+//Profiles
+app.get('/profiles/:userId', profileCtrl.getProfile);
+app.put('/profiles/:userId', profileCtrl.updateProfile);
 
 export const api = functions.https.onRequest(app);

@@ -28,7 +28,7 @@ export class ProfileService {
     if (environment.useFirebase) {
       const userId = localStorage.getItem('userId');
       if (!userId) return of({});
-      return from(getDoc(doc(this.firestore, 'users', userId))).pipe(
+      return from(getDoc(doc(this.firestore, 'profiles', userId))).pipe(
         map(snap => snap.data() as ProfileModel)
       );
     }
@@ -38,7 +38,7 @@ export class ProfileService {
   updateProfile(data: Partial<ProfileModel>): Observable<ProfileModel> {
     if (environment.useFirebase) {
       const userId = localStorage.getItem('userId');
-      return from(setDoc(doc(this.firestore, 'users', userId!), data, { merge: true })).pipe(
+      return from(setDoc(doc(this.firestore, 'profiles', userId!), data, { merge: true })).pipe(
         map(() => data as ProfileModel)
       );
     }

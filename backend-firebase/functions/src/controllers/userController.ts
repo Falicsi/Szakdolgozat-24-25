@@ -30,9 +30,24 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   const data = req.body as User;
-  const ref  = await usersCol.add(data);
+  const now = new Date();
+  const ref  = await usersCol.add({
+    ...data,
+    createdAt: now,
+    updatedAt: now
+  });
+
+  // Profil automatikus létrehozása a user ID-val
+  await db.collection('profiles').doc(ref.id).set({
+    userId: ref.id,
+    fullName: data.displayName || '',
+    avatarUrl: '',
+    bio: '',
+    createdAt: now,
+    updatedAt: now
+  });
+
   res.status(201).json({ id: ref.id });
-  return;
 };
 
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
@@ -45,6 +60,8 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   try {
     await usersCol.doc(req.params.id).delete();
+    // Profil törlése is
+    await db.collection('profiles').doc(req.params.id).delete();
     res.status(204).end();
   } catch (err) {
     console.error('Felhasználó törlés hiba:', err);

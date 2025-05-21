@@ -1,7 +1,18 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // ----------------------------------------------------------------
+    // profiles kollekció
+    match /profiles/{userId} {
+      // Saját profil olvasása/módosítása
+      allow get, update: if request.auth != null && request.auth.uid == userId;
 
+      // Profil létrehozása csak saját magának
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      // Profil törlése csak adminnak
+      allow delete: if request.auth.token.admin == true;
+    }
     // ----------------------------------------------------------------
     // users kollekció
     match /users/{userId} {
