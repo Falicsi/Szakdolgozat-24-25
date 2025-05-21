@@ -22,7 +22,7 @@ import { UserEditDialogComponent, UserDialogData } from '../user-edit-dialog/use
 export class UserListComponent implements OnInit {
   users: any[] = [];
   currentUserId: string = '';
-  displayedColumns = ['id','username','email','actions']; // _id helyett id
+  displayedColumns = ['username','email','actions']; // id eltávolítva
 
   constructor(private authService: AuthService, private dialog: MatDialog) {}
 
@@ -40,13 +40,18 @@ export class UserListComponent implements OnInit {
   }
 
   edit(u: any) {
+    const id = u._id || u.id;
     const ref = this.dialog.open<UserEditDialogComponent, UserDialogData>(
       UserEditDialogComponent,
-      { data: { id: u._id || u.id, username: u.username, email: u.email } }
+      { data: { id, username: u.username, email: u.email } }
     );
     ref.afterClosed().subscribe(result => {
       if (!result) return;
-      this.authService.updateUser(result).subscribe(updated => {
+      if (!id) return; // Csak akkor update, ha van id!
+      // Ne küldj id-t a body-ban, csak külön paraméterként!
+      const updateData = { ...result };
+      delete updateData.id;
+      this.authService.updateUser(id, updateData).subscribe(updated => {
         this.users = this.users.map(x => (x._id || x.id) === (updated._id || updated.id) ? updated : x);
       });
     });

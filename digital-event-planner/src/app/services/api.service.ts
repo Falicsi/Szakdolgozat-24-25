@@ -54,7 +54,7 @@ export class ApiService {
       ? this.http.post<{ id: string }>(`${this.fbBase}/users`, data)
       : this.http.post<{ id: string }>(`${this.nodeBase}/users`, data);
   }
-  updateUser(id: string, data: Partial<User>): Observable<any> {
+  updateUser(id: string, data: any): Observable<any> {
     return this.useFB
       ? this.http.put<any>(`${this.fbBase}/users/${id}`, data)
       : this.http.put<any>(`${this.nodeBase}/users/${id}`, data);

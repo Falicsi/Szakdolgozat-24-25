@@ -16,7 +16,7 @@ import { EventDialogComponent } from '../../event-dialog/event-dialog.component'
 })
 export class EventListComponent implements OnInit {
   events: EventModel[] = [];
-  displayedColumns = ['_id','title','start','end','actions'];
+  displayedColumns = ['title','start','end','actions']; // _id eltávolítva
 
   constructor(private eventService: EventService, private dialog: MatDialog) {}
 
@@ -24,10 +24,12 @@ export class EventListComponent implements OnInit {
     this.eventService.getEvents().subscribe(e => this.events = e);
   }
 
-  delete(eventId: string) {
+  delete(event: EventModel) {
+    const eventId = event._id ?? event.id;
+    if (!eventId) return;
     if (!confirm('Biztosan törlöd ezt az eseményt?')) return;
     this.eventService.deleteEvent(eventId).subscribe(() => {
-      this.events = this.events.filter(e => (e._id || (e as any).id) !== eventId);
+      this.events = this.events.filter(e => (e._id ?? e.id) !== eventId);
     });
   }
 
@@ -48,24 +50,22 @@ export class EventListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(result => {
       if (!result) return;
-      const updated: EventModel = { 
-        _id: e._id,
-        id: e.id,
+      const eventId = e._id ?? e.id;
+      if (!eventId) return;
+      // Csak a szerkeszthető mezőket küldjük!
+      const updated: Partial<EventModel> = { 
         title: result.title,
         start: result.start.toISOString(),
         end: result.end.toISOString(),
         description: result.description,
         createdBy: result.createdBy,
         invitedUsers: result.invitedUsers,
-        resource:    result.resource,
-        category:    result.category 
+        resource: result.resource,
+        category: result.category 
       };
-      const eventId = e._id || e.id;
-      if (!eventId) return; // <-- Hibakezelés!
       this.eventService.updateEvent(eventId, updated).subscribe(saved => {
-        this.events = this.events.map(x => (x._id || x.id) === (saved._id || saved.id) ? saved : x);
+        this.events = this.events.map(x => (x._id ?? x.id) === (saved._id ?? saved.id) ? saved : x);
       });
     });
   }
-  
 }

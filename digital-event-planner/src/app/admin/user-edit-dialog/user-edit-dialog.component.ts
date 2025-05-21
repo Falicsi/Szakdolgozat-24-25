@@ -62,7 +62,9 @@ export class UserEditDialogComponent implements OnInit {
   }
   onSubmit(){
     if(this.form.valid){
-      this.dialogRef.close({ id: this.data.id, ...this.form.value });
+      const result: any = { ...this.form.value };
+      if (this.data.id) result.id = this.data.id; // Csak ha van id!
+      this.dialogRef.close(result);
     }
   }
 }

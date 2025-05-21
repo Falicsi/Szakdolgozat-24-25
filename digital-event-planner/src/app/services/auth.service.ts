@@ -122,7 +122,8 @@ export class AuthService {
     return this.api.deleteUser(userId);
   }
 
-  updateUser(user: Partial<User> & { _id: string }) {
-    return this.api.updateUser(user._id, user);
+  updateUser(id: string, data: any): Observable<any> {
+    // csak a szerkeszthető mezőket küldd!
+    return this.api.updateUser(id, data);
   }
 }
