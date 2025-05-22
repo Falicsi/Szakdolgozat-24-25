@@ -29,6 +29,7 @@ export class NavbarComponent {
   toggleTheme() {
     this.theme = this.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', this.theme);
+    document.body.setAttribute('data-theme', this.theme);
     localStorage.setItem('theme', this.theme);
   }
 

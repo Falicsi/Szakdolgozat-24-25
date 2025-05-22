@@ -51,9 +51,30 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
-  const data: Partial<User> = req.body;
-  await usersCol.doc(req.params.id).set(data, { merge: true });
-  res.json({ id: req.params.id });
+  const data = req.body as any; // vagy: { [key: string]: any }
+  const userId = req.params.id;
+
+  // 1. Jelszó módosítás, ha van
+  if (data.password) {
+    // Jelszó szabályok ellenőrzése (pl. min. 8 karakter, kisbetű, nagybetű, szám, speciális karakter)
+    const pw = data.password;
+    const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!pwPattern.test(pw)) {
+      res.status(400).json({ message: 'A jelszónak legalább 8 karakterből kell állnia, tartalmaznia kell kis- és nagybetűt, számot és speciális karaktert.' });
+      return;
+    }
+    try {
+      await admin.auth().updateUser(userId, { password: pw });
+    } catch (err) {
+      res.status(400).json({ message: 'Jelszó módosítás sikertelen', error: (err as any).message });
+      return;
+    }
+    delete data.password; // TÖRÖLD A JELSZÓT, NE KERÜLJÖN A FIRESTORE-BA!
+  }
+
+  // 2. Firestore user doc frissítése (a többi mező)
+  await usersCol.doc(userId).set(data, { merge: true });
+  res.json({ id: userId });
   return;
 };
 

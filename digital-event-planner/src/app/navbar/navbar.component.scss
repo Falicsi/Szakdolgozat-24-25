@@ -31,6 +31,18 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 2rem;
+
+    @media (max-width: 900px) {
+      padding: 0 1rem;
+      max-width: 100vw;
+    }
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 0 0.5rem;
+      gap: 0.3rem;
+    }
   }
 
   .logo {
@@ -45,6 +57,11 @@
 
     .logo-icon {
       color: var(--primary, #1976d2);
+    }
+
+    @media (max-width: 600px) {
+      font-size: 1.05rem;
+      gap: 0.3rem;
     }
   }
 
@@ -63,6 +80,17 @@
       &:hover {
         background: rgba(255,255,255,0.08);
       }
+    }
+
+    @media (max-width: 900px) {
+      gap: 0.7rem;
+    }
+
+    @media (max-width: 600px) {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.97rem;
+      margin-bottom: 0.2rem;
     }
   }
 
@@ -95,6 +123,11 @@
       transition: background 0.2s;
       &:hover {
         background: rgba(255,255,255,0.10);
+      }
+
+      @media (max-width: 600px) {
+        font-size: 1.2rem;
+        margin-left: 0.2rem;
       }
     }
   }

@@ -1,0 +1,20 @@
+::ng-deep .mat-dialog-container {
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  box-sizing: border-box;
+  padding: 1.5rem;
+  max-width: 98vw;
+  width: 480px;
+}
+
+form, .full-width, mat-form-field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input, textarea, select {
+  width: 100%;
+  box-sizing: border-box;
+}
