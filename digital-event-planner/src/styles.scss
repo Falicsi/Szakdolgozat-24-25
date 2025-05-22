@@ -7,3 +7,44 @@ body {
   transition: background 0.3s, color 0.3s;
   margin: 0;
 }
+
+@media (max-width: 600px) {
+  body[data-theme="light"] .navbar-links,
+  html[data-theme="light"] .navbar-links {
+    background: #f2f2f2 !important;
+  }
+  body[data-theme="light"] .navbar-links a,
+  body[data-theme="light"] .navbar-links .theme-switch,
+  body[data-theme="light"] .navbar-links .theme-label,
+  body[data-theme="light"] .navbar-links mat-icon,
+  body[data-theme="light"] .navbar-links .action-link,
+  html[data-theme="light"] .navbar-links a,
+  html[data-theme="light"] .navbar-links .theme-switch,
+  html[data-theme="light"] .navbar-links .theme-label,
+  html[data-theme="light"] .navbar-links mat-icon,
+  html[data-theme="light"] .navbar-links .action-link {
+    color: #111 !important;
+    fill: #111 !important;
+  }
+  /* A burger ikon legyen fehér világos módban is */
+  body[data-theme="light"] .burger,
+  body[data-theme="light"] .burger mat-icon,
+  html[data-theme="light"] .burger,
+  html[data-theme="light"] .burger mat-icon {
+    color: #fff !important;
+    fill: #fff !important;
+  }
+}
+
+.calendar-wrapper,
+.calendar-wrapper * {
+  touch-action: manipulation !important;
+}
+
+.cal-day-cell,
+.cal-month-view .cal-cell,
+.cal-week-view .cal-hour-segment,
+.cal-day-view .cal-hour-segment {
+  touch-action: manipulation !important;
+  cursor: pointer;
+}

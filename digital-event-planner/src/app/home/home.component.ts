@@ -41,7 +41,9 @@ export class HomeComponent implements OnInit {
           this.email = user.email || '';
           this.userId = user.uid;
           this.profileService.getProfile().subscribe(profile => {
-            this.avatarUrl = profile?.avatarUrl || 'assets/default-avatar.png';
+          this.avatarUrl = profile?.avatarUrl
+            ? (profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `http://192.168.0.100:3000${profile.avatarUrl}`)
+            : 'assets/default-avatar.png';
             this.username = profile?.fullName || user.displayName || '';
           });
         } else {
@@ -64,7 +66,9 @@ export class HomeComponent implements OnInit {
         this.username = localStorage.getItem('username') || '';
         this.userId = localStorage.getItem('userId') || '';
         this.profileService.getProfile().subscribe(profile => {
-          this.avatarUrl = profile?.avatarUrl || 'assets/default-avatar.png';
+          this.avatarUrl = profile?.avatarUrl
+            ? (profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `http://192.168.0.100:3000${profile.avatarUrl}`)
+            : 'assets/default-avatar.png';
           this.username = profile?.fullName || this.username;
         });
       }

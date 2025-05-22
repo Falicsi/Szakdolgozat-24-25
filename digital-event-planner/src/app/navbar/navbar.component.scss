@@ -38,10 +38,13 @@
     }
 
     @media (max-width: 600px) {
-      flex-direction: column;
-      align-items: flex-start;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
       padding: 0 0.5rem;
-      gap: 0.3rem;
+      gap: 0;
+      position: relative;
     }
   }
 
@@ -62,6 +65,8 @@
     @media (max-width: 600px) {
       font-size: 1.05rem;
       gap: 0.3rem;
+      flex: 1 1 auto;
+      justify-content: flex-start;
     }
   }
 
@@ -95,9 +100,19 @@
       width: 100vw;
       background: var(--surface);
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 1rem 0.5rem;
+      padding: 1rem 0.5rem 0.5rem 0.5rem;
       z-index: 11;
       border-radius: 0 0 12px 12px;
+
+      // Világos módban szürkésebb háttér és sötét szöveg/ikonok
+      [data-theme="light"] & {
+        background: #f2f2f2;
+        a, .theme-switch, .theme-label, mat-icon, .action-link {
+          color: #111 !important;
+          // Az Angular Material ikonoknál is fontos lehet a fill:
+          fill: #111 !important;
+        }
+      }
     }
   }
 
@@ -155,9 +170,18 @@
   @media (max-width: 600px) {
     .burger {
       display: block;
-      color: var(--text);
+      color: var(--navbar-text);
       margin-left: auto;
       z-index: 12;
+      flex: 0 0 auto;
+      margin-left: 0;
+      margin-right: 0;
+      order: 2;
+
+      // Világos módban legyen sötét
+      [data-theme="light"] & {
+        color: #111 !important;
+      }
     }
     .navbar-links {
       display: none;
@@ -168,22 +192,47 @@
       width: 100vw;
       background: var(--surface);
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 1rem 0.5rem;
+      padding: 1rem 0.5rem 0.5rem 0.5rem;
       z-index: 11;
       border-radius: 0 0 12px 12px;
     }
     .navbar-links.open {
       display: flex;
     }
-    .navbar-actions {
-      display: none;
-    }
-    .navbar-actions.mobile-theme {
+    .navbar-theme-switch {
       display: flex;
       justify-content: flex-end;
-      padding: 0.5rem 1rem 0.5rem 0;
-      background: var(--surface);
-      border-radius: 0 0 12px 12px;
+      margin-top: 0.5rem;
+      padding-right: 0.5rem;
+      border-top: 1px solid var(--border);
+
+      [data-theme="light"] & {
+        border-top: 1px solid #e0e0e0;
+      }
+    }
+    .theme-switch {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--navbar-text);
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+      &:hover {
+        background: var(--hover);
+      }
+
+      .theme-label {
+        font-size: 1rem;
+        font-weight: 500;
+      }
+    }
+    .navbar-actions {
+      display: none;
     }
   }
 }

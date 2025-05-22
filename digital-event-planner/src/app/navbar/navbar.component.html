@@ -25,19 +25,20 @@
       </a>
       <a routerLink="/profile" *ngIf="isLoggedIn">Profil</a>
       <a routerLink="/admin" *ngIf="isAdmin">Admin</a>
-      <!-- Akciógombok mobilon is a menüben -->
       <a routerLink="/login" class="action-link" *ngIf="!isLoggedIn">Bejelentkezés</a>
       <a routerLink="/register" class="action-link" *ngIf="!isLoggedIn">Regisztráció</a>
+
+      <!-- Mobil night/day switch csak burgerben -->
+      <div class="navbar-theme-switch" *ngIf="isMobile && menuOpen">
+        <button class="theme-switch" (click)="toggleTheme()" title="Téma váltás">
+          <mat-icon>{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          <span class="theme-label">{{ theme === 'dark' ? 'Világos mód' : 'Sötét mód' }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Akciógombok asztali nézetben -->
     <div class="navbar-actions" *ngIf="!isMobile">
-      <button class="theme-switch" (click)="toggleTheme()" title="Téma váltás">
-        <mat-icon>{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
-      </button>
-    </div>
-    <!-- Akciógombok mobilon a menü végén -->
-    <div class="navbar-actions mobile-theme" *ngIf="isMobile && menuOpen">
       <button class="theme-switch" (click)="toggleTheme()" title="Téma váltás">
         <mat-icon>{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>

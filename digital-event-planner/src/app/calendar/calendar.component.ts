@@ -297,4 +297,20 @@ export class CalendarComponent implements OnInit {
   onTimeSlotClick(date: Date): void {
   this.onDayClick(date);
 }
+
+onCalendarTouch(event: TouchEvent) {
+  // Csak egy ujjal, csak ha nem mozgás (swipe)
+  if (event.touches.length === 0 && event.changedTouches.length === 1) {
+    const touch = event.changedTouches[0];
+    // Megkeressük, melyik nap cellára bökött (pl. .cal-cell)
+    const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (elem && elem.classList.contains('cal-cell')) {
+      // Próbáljuk kinyerni a dátumot a cellából (ha van data-date attribútum)
+      const dateStr = elem.getAttribute('data-date');
+      if (dateStr) {
+        this.onDayClick(new Date(dateStr));
+      }
+    }
+  }
+}
 }
