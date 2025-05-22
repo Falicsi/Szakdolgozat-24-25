@@ -7,14 +7,14 @@
   <!-- 2. Kétoszlopos középső rész -->
   <div class="content-body">
     <!-- bal oldali sidebar a profilnak -->
-    <aside class="sidebar">
-      <div *ngIf="isAuthenticated">
-        <mat-icon>account_circle</mat-icon>
-        <div class="user-email">{{ email }}</div>
-        <div class="user-username">{{ username }}</div>
-        <button class="logout-button" (click)="logout()">Kijelentkezés</button>
-      </div>
-    </aside>
+  <aside class="sidebar">
+    <div *ngIf="isAuthenticated">
+      <img [src]="avatarUrl" alt="Profilkép" class="avatar" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:0.5rem;">
+      <div class="user-email">{{ email }}</div>
+      <div class="user-username">{{ username }}</div>
+      <button class="logout-button" (click)="logout()">Kijelentkezés</button>
+    </div>
+  </aside>
 
     <!-- fő tartalom: naptár -->
     <main class="main-area">

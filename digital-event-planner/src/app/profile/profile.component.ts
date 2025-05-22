@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { ProfileService, ProfileModel } from '../services/profile.service';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { firstValueFrom } from 'rxjs';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -44,19 +46,33 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.profileService.getProfile().subscribe({
-      next: (profile: ProfileModel) => {
-        this.profileData = profile;
-        this.form.patchValue({
-          bio: profile.bio ?? ''
-        });
-      },
-      error: err => {
-        console.error('Profil lekérése hiba', err);
+ngOnInit(): void {
+  if (environment.useFirebase) {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        localStorage.setItem('userId', user.uid);
+        this.loadProfile();
       }
     });
+  } else {
+    this.loadProfile();
   }
+}
+
+loadProfile() {
+  this.profileService.getProfile().subscribe({
+    next: (profile: ProfileModel) => {
+      this.profileData = profile;
+      this.form.patchValue({
+        bio: profile.bio ?? ''
+      });
+    },
+    error: err => {
+      console.error('Profil lekérése hiba', err);
+    }
+  });
+}
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;

@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../services/api.service';
 import { environment } from '../../environments/environment';
 import { signOut } from '@angular/fire/auth';
+import { ProfileService, ProfileModel } from '../services/profile.service'; 
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 @Component({
   selector: 'app-home',
@@ -15,29 +17,47 @@ import { signOut } from '@angular/fire/auth';
   styleUrls: ['./home.component.scss'],
   imports: [CommonModule, CalendarComponent, NavbarComponent, MatIconModule]
 })
+
 export class HomeComponent implements OnInit {
   isAuthenticated: boolean = false;
   email: string = '';
   username: string = '';
   userId: string = '';
+  avatarUrl: string = 'assets/default-avatar.png'; // <-- alapértelmezett
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private profileService: ProfileService, // <-- injektáld!
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     if (environment.useFirebase) {
-      this.isAuthenticated = !!localStorage.getItem('firebaseUser');
-      if (this.isAuthenticated) {
-        const user = JSON.parse(localStorage.getItem('firebaseUser')!);
-        this.email = user.email || '';
-        this.username = user.username || '';
-        this.userId = user.uid || '';
-      }
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          localStorage.setItem('userId', user.uid);
+          this.isAuthenticated = true;
+          this.email = user.email || '';
+          this.userId = user.uid;
+          this.profileService.getProfile().subscribe(profile => {
+            this.avatarUrl = profile?.avatarUrl || 'assets/default-avatar.png';
+            this.username = profile?.fullName || user.displayName || '';
+          });
+        } else {
+          this.isAuthenticated = false;
+        }
+      });
     } else {
       this.isAuthenticated = !!localStorage.getItem('token');
       if (this.isAuthenticated) {
         this.email = localStorage.getItem('email') || '';
         this.username = localStorage.getItem('username') || '';
         this.userId = localStorage.getItem('userId') || '';
+        this.profileService.getProfile().subscribe(profile => {
+          this.avatarUrl = profile?.avatarUrl || 'assets/default-avatar.png';
+          this.username = profile?.fullName || this.username;
+        });
       }
     }
   }

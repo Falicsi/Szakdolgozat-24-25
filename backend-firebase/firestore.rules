@@ -4,13 +4,8 @@ service cloud.firestore {
     // ----------------------------------------------------------------
     // profiles kollekció
     match /profiles/{userId} {
-      // Saját profil olvasása/módosítása
       allow get, update: if request.auth != null && request.auth.uid == userId;
-
-      // Profil létrehozása csak saját magának
       allow create: if request.auth != null && request.auth.uid == userId;
-
-      // Profil törlése csak adminnak
       allow delete: if request.auth.token.admin == true;
     }
     // ----------------------------------------------------------------

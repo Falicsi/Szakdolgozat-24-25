@@ -18,7 +18,7 @@ export class AuthService {
 
   register(username: string, email: string, password: string): Observable<any> {
     if (environment.useFirebase) {
-      // Firebase Auth + Firestore user doc
+      // Firebase Auth + Firestore user doc + profil
       return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
         switchMap((cred: UserCredential) =>
           setDoc(doc(this.firestore, 'users', cred.user.uid), {
@@ -26,11 +26,23 @@ export class AuthService {
             username,
             email,
             roles: ['user']
-          }).then(() => ({ uid: cred.user.uid, username, email }))
+          }).then(() =>
+            // PROFIL LÉTREHOZÁSA ITT!
+            setDoc(doc(this.firestore, 'profiles', cred.user.uid), {
+              userId: cred.user.uid,
+              fullName: username,
+              avatarUrl: 'assets/default-avatar.png',
+              bio: '',
+              createdAt: new Date(),
+              updatedAt: new Date()
+            })
+          ).then(() => ({ uid: cred.user.uid, username, email }))
         ),
         tap(user => {
           localStorage.setItem('firebaseUser', JSON.stringify(user));
           localStorage.setItem('firebaseRole', 'user');
+          localStorage.setItem('userId', user.uid); // EZ KELL!
+          localStorage.setItem('email', user.email);
         })
       );
     } else {

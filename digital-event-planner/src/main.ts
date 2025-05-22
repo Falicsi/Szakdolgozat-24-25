@@ -13,6 +13,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { environment } from './environments/environment';
 import { connectFirestoreEmulator } from 'firebase/firestore';
 import { connectAuthEmulator } from 'firebase/auth';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -36,10 +37,13 @@ bootstrapApplication(AppComponent, {
 })
   .then(() => {
     if (!environment.production) {
-      // Firestore emulátor
-      connectFirestoreEmulator(getFirestore(), 'localhost', 8080);
-      // Auth emulátor
+      // Csak egyszer hívd meg!
+      const firestore = getFirestore();
+      if ((firestore as any)._settingsFrozen !== true) {
+        connectFirestoreEmulator(firestore, 'localhost', 8080);
+      }
       connectAuthEmulator(getAuth(), 'http://localhost:9099');
+      connectStorageEmulator(getStorage(), 'localhost', 9199);
     }
   })
   .catch((err) => console.error(err));

@@ -41,7 +41,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   await db.collection('profiles').doc(ref.id).set({
     userId: ref.id,
     fullName: data.displayName || '',
-    avatarUrl: '',
+    avatarUrl: 'assets/default-avatar.png',
     bio: '',
     createdAt: now,
     updatedAt: now
