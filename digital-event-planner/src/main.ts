@@ -37,7 +37,6 @@ bootstrapApplication(AppComponent, {
 })
   .then(() => {
     if (!environment.production) {
-      // Csak egyszer hívd meg!
       const firestore = getFirestore();
       if ((firestore as any)._settingsFrozen !== true) {
         connectFirestoreEmulator(firestore, '192.168.0.100', 8080);

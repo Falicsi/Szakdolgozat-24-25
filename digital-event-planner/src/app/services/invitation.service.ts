@@ -1,4 +1,3 @@
-// src/app/services/invitation.service.ts
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService, Invitation } from './api.service';

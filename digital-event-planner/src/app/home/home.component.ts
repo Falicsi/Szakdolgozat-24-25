@@ -23,11 +23,11 @@ export class HomeComponent implements OnInit {
   email: string = '';
   username: string = '';
   userId: string = '';
-  avatarUrl: string = 'assets/default-avatar.png'; // <-- alapértelmezett
+  avatarUrl: string = 'assets/default-avatar.png';
 
   constructor(
     private authService: AuthService,
-    private profileService: ProfileService, // <-- injektáld!
+    private profileService: ProfileService,
     private router: Router
   ) {}
 
@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
 
   async logout() {
     if (environment.useFirebase) {
-      await signOut(this.authService['auth']); // vagy this.authService.auth, ha public
+      await signOut(this.authService['auth']);
       localStorage.removeItem('firebaseUser');
       localStorage.removeItem('firebaseRole');
       localStorage.removeItem('email');

@@ -26,23 +26,19 @@ export const getEvent = async (req: Request, res: Response): Promise<void> => {
 export const createEvent = async (req: Request, res: Response): Promise<void> => {
   const data = req.body as Event;
   const ref  = await eventsCol.add(data);
-
-  // Meghívók létrehozása
   const invitedUsers: string[] = data.invitedUsers || [];
 
-  // Szervezőnek accepted invitation
   await invitationsCol.add({
     eventId: ref.id,
-    userId: data.createdBy, // e-mail cím!
+    userId: data.createdBy,
     status: 'accepted'
   });
 
-  // Meghívottaknak pending invitation
   for (const email of invitedUsers) {
     if (email !== data.createdBy) {
       await invitationsCol.add({
         eventId: ref.id,
-        userId: email, // e-mail cím!
+        userId: email,
         status: 'pending'
       });
     }
@@ -54,20 +50,19 @@ export const createEvent = async (req: Request, res: Response): Promise<void> =>
 
 export const updateEvent = async (req: Request, res: Response): Promise<void> => {
   const data: Partial<Event> = req.body;
+
   await eventsCol.doc(req.params.id).set(data, { merge: true });
 
-  // Meghívók frissítése
   const invitedUsers: string[] = data.invitedUsers || [];
   const snap = await invitationsCol.where('eventId', '==', req.params.id).get();
   const existingInvs = snap.docs.map(d => ({ id: d.id, ...(d.data() as Invitation) }));
 
-  // Meghívottak, akik már nincsenek a listában: törlés
   for (const inv of existingInvs) {
     if (inv.userId !== data.createdBy && !invitedUsers.includes(inv.userId)) {
       await invitationsCol.doc(inv.id).delete();
     }
   }
-  // Új meghívottak: invitation létrehozása
+
   for (const email of invitedUsers) {
     if (
       email !== data.createdBy &&
@@ -88,7 +83,7 @@ export const updateEvent = async (req: Request, res: Response): Promise<void> =>
 export const deleteEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     await eventsCol.doc(req.params.id).delete();
-    // Meghívók törlése
+
     const snap = await invitationsCol.where('eventId', '==', req.params.id).get();
     for (const doc of snap.docs) {
       await invitationsCol.doc(doc.id).delete();

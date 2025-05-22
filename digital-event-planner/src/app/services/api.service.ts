@@ -65,7 +65,6 @@ export class ApiService {
       : this.http.delete<any>(`${this.nodeBase}/users/${id}`);
   }
 
-  // -- Profiles -- //
   getProfile(): Observable<any> {
     return this.useFB
       ? this.http.get<any>(`${this.fbBase}/profile`)
@@ -84,7 +83,6 @@ export class ApiService {
       : this.http.post<string>(`${this.nodeBase}/profile/avatar`, formData);
   }
 
-  // ----- Roles -----
   listRoles(): Observable<Role[]> {
     return this.useFB
       ? this.http.get<Role[]>(`${this.fbBase}/roles`)
@@ -111,7 +109,6 @@ export class ApiService {
       : this.http.delete<any>(`${this.nodeBase}/roles/${id}`);
   }
 
-  // ----- Categories -----
   listCategories(): Observable<Category[]> {
     return this.useFB
       ? this.http.get<Category[]>(`${this.fbBase}/categories`)
@@ -138,7 +135,6 @@ export class ApiService {
       : this.http.delete<void>(`${this.nodeBase}/categories/${id}`);
   }
 
-  // ----- Resources -----
   listResources(): Observable<Resource[]> {
     return this.useFB
       ? this.http.get<Resource[]>(`${this.fbBase}/resources`)
@@ -175,7 +171,6 @@ export class ApiService {
       : this.http.get<Resource[]>(`${this.nodeBase}/resources/event/${eventId}`);
   }
 
-  // ----- Events -----
   listEvents(): Observable<EventItem[]> {
     return this.useFB
       ? this.http.get<EventItem[]>(`${this.fbBase}/events`)
@@ -202,7 +197,6 @@ export class ApiService {
       : this.http.delete<any>(`${this.nodeBase}/events/${id}`);
   }
 
-  // ----- Invitations -----
   listInvitations(): Observable<Invitation[]> {
     return this.useFB
       ? this.http.get<Invitation[]>(`${this.fbBase}/invitations`)

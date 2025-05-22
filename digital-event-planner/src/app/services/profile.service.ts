@@ -55,7 +55,6 @@ export class ProfileService {
         switchMap(() => from(getDownloadURL(avatarRef)))
       );
     }
-    // Ha nem Firebase-t használsz, csomagold be FormData-ba
     const formData = new FormData();
     formData.append('avatar', file, file.name);
     return this.api.uploadAvatar(formData);

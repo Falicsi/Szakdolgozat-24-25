@@ -23,7 +23,6 @@ export class AdminGuard implements CanActivate {
       if (tokenResult.claims && tokenResult.claims['admin']) {
         return true;
       }
-      // --- ÚJ: Firestore user doc roles ellenőrzése ---
       const snap = await getDoc(doc(this.firestore, 'users', user.uid));
       const data = snap.data() as any;
       if (data && Array.isArray(data.roles) && data.roles.includes('admin')) {

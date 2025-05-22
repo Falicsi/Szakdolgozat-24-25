@@ -60,7 +60,6 @@ export const deleteCategory = async (req: Request, res: Response): Promise<void>
     res.status(204).end();
   } catch (err) {
     console.error('Kategória törlés hiba:', err);
-    // Hibakereséshez logoljuk a user-t és az id-t is
     console.error('Törlés jogosultság ellenőrzés:', {
       user: (req as any).user,
       id: req.params.id

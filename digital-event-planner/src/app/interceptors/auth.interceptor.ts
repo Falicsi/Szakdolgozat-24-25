@@ -1,4 +1,3 @@
-// src/app/interceptors/auth.interceptor.ts
 import { Injectable } from '@angular/core';
 import {
   HttpInterceptor,
@@ -16,7 +15,6 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    // Csak akkor adjuk hozzá, ha Firebase Auth-ot használunk
     const user = getAuth().currentUser;
     if (user) {
       return from(user.getIdToken()).pipe(

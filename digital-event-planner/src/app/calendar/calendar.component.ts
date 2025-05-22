@@ -43,7 +43,7 @@ export class CalendarComponent implements OnInit {
     private dialog: MatDialog,
     private eventService: EventService,
     private invitationService: InvitationService,
-    private authService: AuthService // <-- ADD THIS
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +53,6 @@ export class CalendarComponent implements OnInit {
     this.loadEvents();
   }
 
-  /** Csak a szervező vagy elfogadott meghívott láthatja az eseményt */
   private loadEvents(): void {
     const currentUserEmail = this.authService.getCurrentUserEmail();
     if (!currentUserEmail) {
@@ -154,32 +153,26 @@ export class CalendarComponent implements OnInit {
       };
       this.eventService.createEvent(newEvent).subscribe({
         next: (res) => {
-          // Esemény létrejött, hozzunk létre meghívásokat is
-          // this.createInvitationsForEvent(res.id, newEvent);
+
         },
         error: err => console.error('Event creation failed:', err)
       });
     });
   }
 
-  /** Meghívások létrehozása új eseményhez */
   private createInvitationsForEvent(eventId: string, event: EventModel) {
-    // EZT AZ EGÉSZ FÜGGVÉNYT NE HÍVD, vagy hagyd üresen!
+    
   }
 
-  /** Meghívások frissítése esemény módosításakor */
   private updateInvitationsForEvent(eventId: string, updatedEvent: EventModel) {
-    // 1. Lekérjük az összes invitation-t ehhez az eseményhez
     this.invitationService.list().subscribe(invs => {
       const eventInvs = invs.filter(inv => inv.eventId === eventId);
       const invitedUserIds = (updatedEvent.invitedUsers || []);
 
-      // Meghívottak, akik már nem szerepelnek a listában: töröljük a meghívásukat
       eventInvs
         .filter(inv => inv.userId !== updatedEvent.createdBy && !invitedUserIds.includes(inv.userId))
         .forEach(inv => this.invitationService.delete(inv._id!).subscribe());
 
-      // Meghívottak, akik újak: létrehozzuk a meghívást
       invitedUserIds
         .filter(uid => !eventInvs.some(inv => inv.userId === uid))
         .forEach(uid => {
@@ -190,12 +183,10 @@ export class CalendarComponent implements OnInit {
           }).subscribe();
         });
 
-      // Frissítjük a naptárt
       this.loadEvents();
     });
   }
 
-  /** Meghívások törlése esemény törlésekor */
   private deleteInvitationsForEvent(eventId: string) {
     this.invitationService.list().subscribe(invs => {
       invs.filter(inv => inv.eventId === eventId)
@@ -236,7 +227,6 @@ export class CalendarComponent implements OnInit {
         category:      result.category
       };
       this.eventService.updateEvent(updated._id!, updated).subscribe(() => {
-        // Meghívások frissítése
         this.updateInvitationsForEvent(updated._id!, updated);
       });
     });
@@ -270,7 +260,6 @@ export class CalendarComponent implements OnInit {
       }
       if (res?.delete && isOwner) {
         this.eventService.deleteEvent(event.meta._id).subscribe(() => {
-          // Meghívások törlése
           this.deleteInvitationsForEvent(event.meta._id);
           this.loadEvents();
         });
@@ -290,7 +279,6 @@ export class CalendarComponent implements OnInit {
       )!;
       return `${start} – ${end}`;
     }
-    // Nap nézet
     return this.datePipe.transform(this.viewDate, 'fullDate')!;
   }
 
@@ -299,13 +287,10 @@ export class CalendarComponent implements OnInit {
 }
 
 onCalendarTouch(event: TouchEvent) {
-  // Csak egy ujjal, csak ha nem mozgás (swipe)
   if (event.touches.length === 0 && event.changedTouches.length === 1) {
     const touch = event.changedTouches[0];
-    // Megkeressük, melyik nap cellára bökött (pl. .cal-cell)
     const elem = document.elementFromPoint(touch.clientX, touch.clientY);
     if (elem && elem.classList.contains('cal-cell')) {
-      // Próbáljuk kinyerni a dátumot a cellából (ha van data-date attribútum)
       const dateStr = elem.getAttribute('data-date');
       if (dateStr) {
         this.onDayClick(new Date(dateStr));

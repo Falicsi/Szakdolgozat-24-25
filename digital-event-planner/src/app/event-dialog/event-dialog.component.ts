@@ -65,7 +65,6 @@ export class EventDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // Formot előre létrehozzuk, hogy a HTML-ben mindig legyen
     this.form = this.fb.group({
       title: ['', Validators.required],
       start: ['', Validators.required],
@@ -108,13 +107,11 @@ export class EventDialogComponent implements OnInit {
     });
   }
 
-  /** Segéd: Date → input[type=datetime-local] formátum */
   private toLocal(d: Date): string {
     const tz = d.getTimezoneOffset() * 60000;
     return new Date(d.getTime() - tz).toISOString().slice(0, 16);
   }
 
-  // Meghívottak listája (minden felhasználó, de önmagát kizárva)
   get selectableUsers(): string[] {
     return this.allUsers.filter(email => email !== this.currentUserEmail);
   }
@@ -122,7 +119,6 @@ export class EventDialogComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
     const { title, start, end, description, createdBy, invitedUsers, resource, category } = this.form.value;
-    // Szervező NE legyen benne a meghívottak között!
     const filteredInvitedUsers = (invitedUsers || []).filter((email: string) => email !== createdBy);
     this.dialogRef.close({
       title,

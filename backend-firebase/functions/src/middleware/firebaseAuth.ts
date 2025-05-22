@@ -24,7 +24,6 @@ export function firebaseAuth(req: Request, res: Response, next: NextFunction) {
 
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const user = (req as any).user;
-  // Ellenőrizd az admin claim-et vagy a roles tömböt
   if (
     user &&
     (

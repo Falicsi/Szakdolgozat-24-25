@@ -2,7 +2,6 @@
 <h2>Meghívásaim</h2>
 
 <table mat-table [dataSource]="invitations" class="mat-elevation-z1">
-  <!-- Esemény címe -->
   <ng-container matColumnDef="event">
     <th mat-header-cell *matHeaderCellDef>Esemény</th>
     <td mat-cell *matCellDef="let inv">
@@ -10,13 +9,11 @@
     </td>
   </ng-container>
 
-  <!-- Státusz -->
   <ng-container matColumnDef="status">
     <th mat-header-cell *matHeaderCellDef>Státusz</th>
     <td mat-cell *matCellDef="let inv">{{ inv.status }}</td>
   </ng-container>
 
-  <!-- Akciók -->
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>Akciók</th>
     <td mat-cell *matCellDef="let inv">

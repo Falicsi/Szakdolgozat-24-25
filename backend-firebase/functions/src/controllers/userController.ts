@@ -9,11 +9,11 @@ const usersCol = db.collection('users');
 export async function listUsers(req: Request, res: Response) {
   try {
     const snap = await getFirestore().collection('users').get();
-    console.log('Firestore users docs:', snap.docs.map(d => d.data())); // <-- EZT ADD HOZZÁ
+    console.log('Firestore users docs:', snap.docs.map(d => d.data()));
     const users = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     res.json(users);
   } catch (err) {
-    console.error('Hiba a userek lekérdezésekor:', err); // <-- EZT IS
+    console.error('Hiba a userek lekérdezésekor:', err);
     res.status(500).json({ message: 'Hiba a userek lekérdezésekor', error: err });
   }
 }
@@ -37,7 +37,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     updatedAt: now
   });
 
-  // Profil automatikus létrehozása a user ID-val
   await db.collection('profiles').doc(ref.id).set({
     userId: ref.id,
     fullName: data.displayName || '',
@@ -51,12 +50,10 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
-  const data = req.body as any; // vagy: { [key: string]: any }
+  const data = req.body as any;
   const userId = req.params.id;
 
-  // 1. Jelszó módosítás, ha van
   if (data.password) {
-    // Jelszó szabályok ellenőrzése (pl. min. 8 karakter, kisbetű, nagybetű, szám, speciális karakter)
     const pw = data.password;
     const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!pwPattern.test(pw)) {
@@ -69,10 +66,9 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
       res.status(400).json({ message: 'Jelszó módosítás sikertelen', error: (err as any).message });
       return;
     }
-    delete data.password; // TÖRÖLD A JELSZÓT, NE KERÜLJÖN A FIRESTORE-BA!
+    delete data.password;
   }
 
-  // 2. Firestore user doc frissítése (a többi mező)
   await usersCol.doc(userId).set(data, { merge: true });
   res.json({ id: userId });
   return;
@@ -81,7 +77,6 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   try {
     await usersCol.doc(req.params.id).delete();
-    // Profil törlése is
     await db.collection('profiles').doc(req.params.id).delete();
     res.status(204).end();
   } catch (err) {

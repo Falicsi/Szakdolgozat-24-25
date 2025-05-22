@@ -30,7 +30,7 @@
   margin-top: 0px;
   gap: 2rem;
   padding: 2rem 0;
-  background: var(--background); // <-- háttér fix
+  background: var(--background);
 }
 
 .sidebar {
@@ -44,7 +44,7 @@
   box-shadow: 2px 0 8px rgba(0,0,0,0.04);
   border: 1px solid var(--border);
   min-height: 300px;
-  color: var(--text); // <-- szöveg fix
+  color: var(--text);
 }
 
 .sidebar mat-icon {
@@ -90,7 +90,7 @@
   border-radius: 12px;
   border: 1px solid var(--border);
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  color: var(--text); // <-- szöveg fix
+  color: var(--text);
 }
 
 .home-container {

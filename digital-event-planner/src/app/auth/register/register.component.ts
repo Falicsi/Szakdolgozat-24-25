@@ -29,23 +29,23 @@ export class RegisterComponent {
   }
 
   register() {
-    // Üres mezők ellenőrzése
     if (!this.username || !this.email || !this.password || !this.confirmPassword) {
       this.errorMessage = 'Minden mező kitöltése kötelező!';
       return;
     }
-    // Email formátum ellenőrzése
+
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
     if (!emailPattern.test(this.email)) {
       this.errorMessage = 'Hibás email formátum!';
       return;
     }
-    // Jelszó erősség ellenőrzése
+
     if (!this.passwordRequirements.test(this.password)) {
       this.errorMessage = 'A jelszónak legalább 8 karakterből kell állnia, tartalmaznia kell kis- és nagybetűt, számot és speciális karaktert.';
       return;
     }
-    // Jelszó egyezés ellenőrzése
+
     if (this.password !== this.confirmPassword) {
       this.errorMessage = 'A jelszavak nem egyeznek!';
       return;

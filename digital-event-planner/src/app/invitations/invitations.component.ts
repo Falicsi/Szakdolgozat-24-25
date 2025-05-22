@@ -34,10 +34,8 @@ export class InvitationsComponent implements OnInit {
     const currentUserEmail = this.authService.getCurrentUserEmail();
     if (!currentUserEmail) return;
 
-    // Lekérjük az összes eseményt és meghívást
     this.eventService.getEvents().subscribe((events: EventModel[]) => {
       this.invService.getByUser(currentUserEmail).subscribe(invs => {
-        // Meghívásokhoz hozzárendeljük az esemény címét
         this.invitations = invs
           .filter(inv => inv.status === 'pending')
           .map(inv => ({

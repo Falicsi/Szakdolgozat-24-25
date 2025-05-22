@@ -44,7 +44,7 @@ export class InvitedEventsComponent implements OnInit {
     private resourceService: ResourceService,
     private categoryService: CategoryService,
     private dialog: MatDialog,
-    private authService: AuthService // <-- ADD THIS
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -61,12 +61,10 @@ export class InvitedEventsComponent implements OnInit {
       this.invitationService.getByUser(this.currentUserEmail).subscribe(invs => {
         const acceptedInvs = invs.filter(inv => inv.status === 'accepted' && inv.eventId);
 
-        // Meghívott események csak accepted invitation alapján
         const invitedEvents = events.filter(ev =>
           acceptedInvs.some(inv => inv.eventId === (ev._id || (ev as any).id))
         );
 
-        // Saját + elfogadott események duplikáció nélkül (id vagy _id alapján)
         const all = [...this.ownEvents, ...invitedEvents].filter(
           (event, index, self) =>
             !!event &&
@@ -104,7 +102,6 @@ export class InvitedEventsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.edit) {
-        // Szerkesztő dialog megnyitása
         const editRef = this.dialog.open(EventDialogComponent, {
           data: {
             date:        new Date(event.start),
@@ -121,12 +118,11 @@ export class InvitedEventsComponent implements OnInit {
         });
         editRef.afterClosed().subscribe(editResult => {
           if (editResult) {
-            // Mindig legyen benne az _id!
             const eventId = event._id || event.id;
             if (!eventId) return;
             this.eventService.updateEvent(eventId, {
               ...editResult,
-              _id: eventId // biztosan legyen benne
+              _id: eventId
             }).subscribe(() => this.loadAllEvents());
           }
         });

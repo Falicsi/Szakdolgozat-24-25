@@ -1,4 +1,3 @@
-// src/app/admin/user-list/user-list.component.ts
 import { Component, OnInit }        from '@angular/core';
 import { CommonModule }             from '@angular/common';
 import { MatTableModule }           from '@angular/material/table';
@@ -22,7 +21,7 @@ import { UserEditDialogComponent, UserDialogData } from '../user-edit-dialog/use
 export class UserListComponent implements OnInit {
   users: any[] = [];
   currentUserId: string = '';
-  displayedColumns = ['username','email','actions']; // id eltávolítva
+  displayedColumns = ['username','email','actions'];
 
   constructor(private authService: AuthService, private dialog: MatDialog) {}
 
@@ -30,9 +29,7 @@ export class UserListComponent implements OnInit {
     this.currentUserId = localStorage.getItem('userId') || '';
     this.authService.getAllUsers().subscribe(u => {
       this.users = u;
-      // Logoljuk az összes usert
       console.log('User-listában kapott userek:', this.users);
-      // Ha csak az első usert akarod:
       if (this.users.length) {
         console.log('Első user:', this.users[0]);
       }
@@ -47,8 +44,7 @@ export class UserListComponent implements OnInit {
     );
     ref.afterClosed().subscribe(result => {
       if (!result) return;
-      if (!id) return; // Csak akkor update, ha van id!
-      // Ne küldj id-t a body-ban, csak külön paraméterként!
+      if (!id) return;
       const updateData = { ...result };
       delete updateData.id;
       this.authService.updateUser(id, updateData).subscribe(updated => {

@@ -16,7 +16,7 @@ import { EventDialogComponent } from '../../event-dialog/event-dialog.component'
 })
 export class EventListComponent implements OnInit {
   events: EventModel[] = [];
-  displayedColumns = ['title','start','end','actions']; // _id eltávolítva
+  displayedColumns = ['title','start','end','actions'];
 
   constructor(private eventService: EventService, private dialog: MatDialog) {}
 
@@ -52,7 +52,6 @@ export class EventListComponent implements OnInit {
       if (!result) return;
       const eventId = e._id ?? e.id;
       if (!eventId) return;
-      // Csak a szerkeszthető mezőket küldjük!
       const updated: Partial<EventModel> = { 
         title: result.title,
         start: result.start.toISOString(),

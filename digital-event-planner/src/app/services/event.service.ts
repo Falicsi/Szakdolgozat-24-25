@@ -1,4 +1,3 @@
-// src/app/services/event.service.ts
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -6,7 +5,7 @@ import { ApiService, EventItem } from './api.service';
 
 export interface EventModel {
   _id?: string;
-  id?: string; // <-- EZT ADD HOZZÁ!
+  id?: string;
   title: string;
   description?: string;
   start: string;

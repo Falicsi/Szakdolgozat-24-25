@@ -41,7 +41,6 @@ export class NavbarComponent {
     localStorage.setItem('theme', this.theme);
   }
 
-  /** Igaz, ha van érvényes JWT, azaz be van jelentkezve a user */
   get isLoggedIn(): boolean {
     if (environment.useFirebase) {
       return !!localStorage.getItem('firebaseUser');
@@ -49,21 +48,17 @@ export class NavbarComponent {
     return !!this.auth.getToken();
   }
 
-  /** Igaz, ha a bejelentkezett user role-ja 'admin' */
   get isAdmin(): boolean {
     if (environment.useFirebase) {
-      // Firebase user role-t a Firestore-ból kell lekérni, vagy localStorage-ben tárolni
       return localStorage.getItem('firebaseRole') === 'admin';
     }
     return this.auth.getRole() === 'admin';
   }
 
-  /** Igaz, ha a bejelentkezett user role-ja 'organizer' */
   get isOrganizer(): boolean {
     return this.auth.getRole() === 'organizer';
   }
 
-  /** Igaz, ha a bejelentkezett user role-ja 'user' */
   get isUser(): boolean {
     return this.auth.getRole() === 'user';
   }

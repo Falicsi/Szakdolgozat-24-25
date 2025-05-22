@@ -14,7 +14,7 @@
 
   form {
     background: var(--surface);
-    padding: 2rem 2rem; // legyen szimmetrikus (bal/jobb)
+    padding: 2rem 2rem;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     display: flex;
@@ -23,10 +23,10 @@
     min-width: 320px;
     max-width: 400px;
     width: 100%;
-    box-sizing: border-box; // <<< EZ FONTOS!
+    box-sizing: border-box;
 
     label, input, button {
-      box-sizing: border-box; // <<< minden elemre
+      box-sizing: border-box;
     }
 
     label {

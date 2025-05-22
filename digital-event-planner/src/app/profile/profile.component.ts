@@ -78,7 +78,6 @@ loadProfile() {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
-      // Előnézethez (opcionális)
       const reader = new FileReader();
       reader.onload = (e: any) => {
         if (this.profileData) this.profileData.avatarUrl = e.target.result;
@@ -92,7 +91,6 @@ loadProfile() {
     this.saving = true;
     let avatarUrl = this.profileData?.avatarUrl;
 
-    // Ha van új file, töltsük fel (pl. egy saját backend végpontra vagy külső képfeltöltő API-ra)
     if (this.selectedFile) {
       avatarUrl = await this.uploadImage(this.selectedFile);
     }
@@ -106,7 +104,6 @@ loadProfile() {
         this.message = 'Profil mentve.';
         this.saving = false;
         this.editMode = false;
-        // Frissítsük a profil adatokat
         this.profileService.getProfile().subscribe(p => this.profileData = p);
       },
       error: err => {
@@ -117,10 +114,8 @@ loadProfile() {
     });
   }
 
-  // Dummy image upload, cseréld le a saját backend/upload API-ra!
   async uploadImage(file: File): Promise<string> {
     const resizedBlob = await this.resizeAndCompressImage(file, 500, 500, 0.8);
-    // Blob-ból File-t készítünk, hogy legyen neve
     const uploadFile = new File([resizedBlob], file.name, { type: resizedBlob.type });
     return await firstValueFrom(this.profileService.uploadAvatar(uploadFile));
   }
@@ -135,7 +130,6 @@ loadProfile() {
       };
       img.onload = () => {
         let { width, height } = img;
-        // Méretarány megtartása
         if (width > maxWidth || height > maxHeight) {
           const aspect = width / height;
           if (width > height) {

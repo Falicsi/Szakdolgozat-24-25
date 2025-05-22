@@ -1,12 +1,9 @@
 <div class="home-layout">
-  <!-- 1. Fix header -->
   <header class="header">
     <app-navbar></app-navbar>
   </header>
 
-  <!-- 2. Kétoszlopos középső rész -->
   <div class="content-body">
-    <!-- bal oldali sidebar a profilnak -->
   <aside class="sidebar">
     <div *ngIf="isAuthenticated">
       <img [src]="avatarUrl" alt="Profilkép" class="avatar" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:0.5rem;">
@@ -16,7 +13,6 @@
     </div>
   </aside>
 
-    <!-- fő tartalom: naptár -->
     <main class="main-area">
       <div *ngIf="isAuthenticated; else loginForm">
         <div class="home-container">
@@ -30,7 +26,6 @@
     </main>
   </div>
 
-  <!-- 3. Fixed footer -->
   <footer class="footer">
     <p>&copy; 2025 Digital Event Planner Szakdolgozat Béres Ákos</p>
   </footer>

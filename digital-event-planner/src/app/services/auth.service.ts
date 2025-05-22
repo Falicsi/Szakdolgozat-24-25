@@ -3,8 +3,6 @@ import { Observable, from, of } from 'rxjs';
 import { tap, switchMap } from 'rxjs/operators';
 import { ApiService, User } from './api.service';
 import { environment } from '../../environments/environment';
-
-// Firebase modular importok:
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, UserCredential } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 
@@ -18,7 +16,6 @@ export class AuthService {
 
   register(username: string, email: string, password: string): Observable<any> {
     if (environment.useFirebase) {
-      // Firebase Auth + Firestore user doc + profil
       return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
         switchMap((cred: UserCredential) =>
           setDoc(doc(this.firestore, 'users', cred.user.uid), {
@@ -27,7 +24,6 @@ export class AuthService {
             email,
             roles: ['user']
           }).then(() =>
-            // PROFIL LÉTREHOZÁSA ITT!
             setDoc(doc(this.firestore, 'profiles', cred.user.uid), {
               userId: cred.user.uid,
               fullName: username,
@@ -41,12 +37,11 @@ export class AuthService {
         tap(user => {
           localStorage.setItem('firebaseUser', JSON.stringify(user));
           localStorage.setItem('firebaseRole', 'user');
-          localStorage.setItem('userId', user.uid); // EZ KELL!
+          localStorage.setItem('userId', user.uid);
           localStorage.setItem('email', user.email);
         })
       );
     } else {
-      // Node/Mongo backend
       return this.api.register(username, email, password);
     }
   }
@@ -60,7 +55,6 @@ export class AuthService {
           const tokenResult = await cred.user.getIdTokenResult();
           const roles: string[] = data['roles'] || [];
           const isAdmin = !!tokenResult.claims['admin'] || roles.includes('admin');
-          // --- EZT ADD HOZZÁ ---
           localStorage.setItem('firebaseUser', JSON.stringify({ uid: cred.user.uid, email, ...data }));
           localStorage.setItem('email', email);
           localStorage.setItem('userId', cred.user.uid);
@@ -70,7 +64,6 @@ export class AuthService {
         })
       );
     } else {
-      // Node/Mongo backend
       return this.api.login(email, password).pipe(
         tap(res => {
           localStorage.setItem('token', res.token);
@@ -135,7 +128,6 @@ export class AuthService {
   }
 
   updateUser(id: string, data: any): Observable<any> {
-    // csak a szerkeszthető mezőket küldd!
     return this.api.updateUser(id, data);
   }
 }

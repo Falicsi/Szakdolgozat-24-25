@@ -7,7 +7,7 @@ import { MatInputModule }     from '@angular/material/input';
 import { MatButtonModule }    from '@angular/material/button';
 
 export interface UserDialogData {
-  id?:      string; // vagy string | undefined
+  id?:      string;
   username: string;
   email:    string;
 }
@@ -85,7 +85,6 @@ export class UserEditDialogComponent implements OnInit {
     if(this.form.valid){
       const result: any = { ...this.form.value };
 
-      // Frontend jelszó validáció, ha van új jelszó
       if (result.password) {
         const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
         if (!pwPattern.test(result.password)) {
@@ -97,13 +96,6 @@ export class UserEditDialogComponent implements OnInit {
       }
       if (this.data.id) result.id = this.data.id;
 
-      // Feltételezve, hogy a dialogRef.close(result) helyett egy service hívás történik:
-      // this.userService.updateUser(result).subscribe({
-      //   next: () => this.dialogRef.close(true),
-      //   error: err => this.errorMessage = err?.error?.message || 'Ismeretlen hiba történt'
-      // });
-
-      // Ha továbbra is csak a parent komponens intézi a mentést:
       this.dialogRef.close(result);
     }
   }
