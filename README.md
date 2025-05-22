@@ -16,7 +16,11 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 # Környezeti beállítások
 
-1. Másold a mintafájlt, töltsd ki a firebase adatokkal:
+1. Environment file létrehozása
    ```bash
-   cp src/environments/environment.ts.example src/environments/environment.ts
+   src/environments/env.ts
+   ```
+   env.ts másol/átnevez
+   ```bash
+   src/environments/environment.ts
    ```
