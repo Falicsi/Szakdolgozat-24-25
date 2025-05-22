@@ -3,7 +3,7 @@
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.4.
 
 ## Futtatás
-   1. BACKEND -> backend-firebase/functions:
+   1. BACKEND -> backend-firebase/functions/
       ```bash
       firebase emulators:start --import=./seed --export-on-exit=./seed
       ```
