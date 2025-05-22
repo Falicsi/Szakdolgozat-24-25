@@ -7,10 +7,14 @@
       <span>Digital Event Planner</span>
     </a>
 
+    <!-- Burger ikon mobilon -->
+    <button class="burger" (click)="menuOpen = !menuOpen" aria-label="Menü" *ngIf="isMobile">
+      <mat-icon>{{ menuOpen ? 'close' : 'menu' }}</mat-icon>
+    </button>
+
     <!-- Főbb oldalak -->
-    <div class="navbar-links">
+    <div class="navbar-links" [class.open]="menuOpen || !isMobile">
       <a routerLink="/home">Home</a>
-      <!-- Csak bejelentkezetteknek -->
       <a routerLink="/invited-events" *ngIf="isLoggedIn">Eseményeim</a>
       <a routerLink="/invitations"
          *ngIf="isLoggedIn"
@@ -19,23 +23,24 @@
          [matBadgeHidden]="unreadCount === 0">
         Invitations
       </a>
-      <!-- Profil csak bejelentkezve -->
       <a routerLink="/profile" *ngIf="isLoggedIn">Profil</a>
-      <!-- Admin link csak adminoknak -->
       <a routerLink="/admin" *ngIf="isAdmin">Admin</a>
-    </div>
-
-    <!-- Akciógombok -->
-    <div class="navbar-actions">
-      <!-- Login/Register csak vendégeknek -->
+      <!-- Akciógombok mobilon is a menüben -->
       <a routerLink="/login" class="action-link" *ngIf="!isLoggedIn">Bejelentkezés</a>
       <a routerLink="/register" class="action-link" *ngIf="!isLoggedIn">Regisztráció</a>
+    </div>
 
-      <!-- Téma váltó gomb -->
+    <!-- Akciógombok asztali nézetben -->
+    <div class="navbar-actions" *ngIf="!isMobile">
       <button class="theme-switch" (click)="toggleTheme()" title="Téma váltás">
         <mat-icon>{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
     </div>
-
+    <!-- Akciógombok mobilon a menü végén -->
+    <div class="navbar-actions mobile-theme" *ngIf="isMobile && menuOpen">
+      <button class="theme-switch" (click)="toggleTheme()" title="Téma váltás">
+        <mat-icon>{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+    </div>
   </div>
 </nav>

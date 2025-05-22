@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
@@ -21,9 +21,17 @@ import { environment } from '../../environments/environment';
 export class NavbarComponent {
   theme = localStorage.getItem('theme') || 'dark';
   unreadCount = 0;
+  menuOpen = false;
+  isMobile = window.innerWidth <= 600;
 
   constructor(private auth: AuthService) {
     document.documentElement.setAttribute('data-theme', this.theme);
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.isMobile = window.innerWidth <= 600;
+    if (!this.isMobile) this.menuOpen = false;
   }
 
   toggleTheme() {

@@ -40,10 +40,10 @@ bootstrapApplication(AppComponent, {
       // Csak egyszer hívd meg!
       const firestore = getFirestore();
       if ((firestore as any)._settingsFrozen !== true) {
-        connectFirestoreEmulator(firestore, 'localhost', 8080);
+        connectFirestoreEmulator(firestore, '192.168.0.100', 8080);
       }
-      connectAuthEmulator(getAuth(), 'http://localhost:9099');
-      connectStorageEmulator(getStorage(), 'localhost', 9199);
+      connectAuthEmulator(getAuth(), 'http://192.168.0.100:9099');
+      connectStorageEmulator(getStorage(), '192.168.0.100', 9199);
     }
   })
   .catch((err) => console.error(err));
