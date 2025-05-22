@@ -17,6 +17,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   border: 1px solid var(--border);
   margin-bottom: 1.5rem;
+  color: var(--text);
 }
 
 .calendar-header button {
@@ -31,6 +32,10 @@
   &:hover {
     background: var(--hover);
   }
+}
+
+.calendar-nav {
+  display: flex;
 }
 
 .current-view {
@@ -67,93 +72,5 @@
   width: 95%;
   margin: 0 auto;
   border: 1px solid var(--border);
-}
-
-.calendar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid var(--border);
-  margin-bottom: 1rem;
-  min-height: 48px;
-}
-
-.calendar-nav {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-
-  button {
-    min-width: 36px;
-    min-height: 36px;
-    border-radius: 6px;
-    background: none;
-    border: none;
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s;
-    &:hover {
-      background: var(--hover);
-    }
-    .mat-icon {
-      font-size: 1.5rem;
-    }
-  }
-  .today-btn {
-    background: var(--primary);
-    color: #fff;
-    font-weight: 500;
-    border-radius: 6px;
-    padding: 0 1rem;
-    margin: 0 0.5rem;
-    border: none;
-    height: 36px;
-    transition: background 0.2s;
-    &:hover {
-      background: #1251a3;
-    }
-  }
-}
-
-.current-view {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--primary);
-  letter-spacing: 0.5px;
-}
-
-.view-toggle {
-  display: flex;
-  gap: 0.5rem;
-  button {
-    padding: 0.3rem 0.9rem;
-    border: none;
-    border-radius: 6px;
-    background: var(--surface);
-    color: var(--text);
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    &.active, &:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-  }
-}
-
-.calendar-wrapper {
-  background: var(--surface);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  padding: 1rem;
-  max-width: 1100px;
-  width: 98%;
-  margin: 0 auto;
-  border: 1px solid var(--border);
+  color: var(--text);
 }

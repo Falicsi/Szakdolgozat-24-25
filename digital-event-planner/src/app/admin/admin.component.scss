@@ -1,13 +1,24 @@
 .admin-nav {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f0f0f0;
-    a {
-      text-decoration: none;
-      font-weight: 500;
-      &.active { color: #1976d2; }
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--surface);
+  margin: 0 0 1rem 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+  a {
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--text);
+    padding: 0.4rem 1.1rem;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    &.active, &:hover {
+      background: var(--primary);
+      color: #fff;
     }
   }
-  .admin-content { padding: 1rem; }
-  
+}
+.admin-content {
+  padding: 1rem;
+}

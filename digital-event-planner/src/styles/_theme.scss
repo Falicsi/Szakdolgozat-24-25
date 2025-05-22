@@ -1,5 +1,5 @@
 :root {
-  --primary: #1976d2;
+  --primary: #4fc3f7;
   --background: #23272f;
   --surface: #2c313a;
   --text: #e0e0e0;
@@ -52,24 +52,50 @@ button, .mat-button, .mat-flat-button {
   }
 }
 
-table {
+table, .mat-table {
   width: 100%;
   background: var(--surface);
   color: var(--text);
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
   th, td {
-    padding: 0.75rem 1rem;
+    padding: 0.85rem 1.2rem;
     border-bottom: 1px solid var(--border);
+    font-size: 1rem;
   }
   th {
     background: var(--background);
     font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+  }
+  tr:last-child td {
+    border-bottom: none;
   }
   tr:hover {
     background: var(--hover);
+    transition: background 0.2s;
   }
 }
+
+.mat-header-row, .mat-row {
+  transition: background 0.2s;
+}
+
+.mat-header-cell, .mat-cell {
+  border-bottom: 1px solid var(--border);
+}
+
+button.mat-button, button.mat-flat-button, button.mat-raised-button {
+  min-width: 80px;
+  font-size: 0.97rem;
+  border-radius: 6px;
+  margin-right: 0.3rem;
+}
+
 mat-list, .mat-list {
   background: var(--surface);
   color: var(--text);

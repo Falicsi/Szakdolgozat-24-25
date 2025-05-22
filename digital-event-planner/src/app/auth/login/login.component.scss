@@ -7,14 +7,14 @@
 
   h2 {
     font-size: 1.8rem;
-    color: #202124;
+    color: var(--text);
     margin-bottom: 1.5rem;
     font-weight: 500;
   }
 
   form {
-    background: #fff;
-    padding: 2rem 2.5rem;
+    background: var(--surface);
+    padding: 2rem 2rem; // legyen szimmetrikus (bal/jobb)
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     display: flex;
@@ -23,10 +23,15 @@
     min-width: 320px;
     max-width: 400px;
     width: 100%;
+    box-sizing: border-box; // <<< EZ FONTOS!
+
+    label, input, button {
+      box-sizing: border-box; // <<< minden elemre
+    }
 
     label {
       font-size: 1rem;
-      color: #202124;
+      color: var(--text);
       font-weight: 500;
     }
 
@@ -34,19 +39,20 @@
       width: 100%;
       padding: 0.8rem;
       font-size: 1rem;
-      border: 1px solid #dadce0;
+      border: 1px solid var(--border);
       border-radius: 4px;
-      background: #f7fafd;
-      color: #202124;
-      transition: border-color 0.2s;
+      background: var(--background);
+      color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
       &:focus {
         outline: none;
-        border-color: #1976d2;
+        border-color: var(--primary);
+        background: var(--surface);
       }
     }
 
     button {
-      background: #1976d2;
+      background: var(--primary);
       color: #fff;
       padding: 0.8rem;
       font-size: 1rem;

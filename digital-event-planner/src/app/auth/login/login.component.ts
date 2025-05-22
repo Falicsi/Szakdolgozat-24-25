@@ -28,12 +28,23 @@ export class LoginComponent {
   }
 
   login() {
+    // Üres mezők ellenőrzése
+    if (!this.email || !this.password) {
+      this.errorMessage = 'Az email és a jelszó megadása kötelező!';
+      return;
+    }
+    // Email formátum ellenőrzése
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(this.email)) {
+      this.errorMessage = 'Hibás email formátum!';
+      return;
+    }
     this.authService.login(this.email, this.password).subscribe(
       () => {
         this.router.navigate(['/home']);
       },
       (error) => {
-        this.errorMessage = error?.error?.message || 'Ismeretlen hiba történt!';
+        this.errorMessage = error?.error?.message || 'Hibás email vagy jelszó!';
       }
     );
   }
