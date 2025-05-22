@@ -35,9 +35,9 @@ export class HomeComponent implements OnInit {
     if (environment.useFirebase) {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
+        this.isAuthenticated = !!user;
         if (user) {
           localStorage.setItem('userId', user.uid);
-          this.isAuthenticated = true;
           this.email = user.email || '';
           this.userId = user.uid;
           this.profileService.getProfile().subscribe(profile => {
@@ -45,7 +45,16 @@ export class HomeComponent implements OnInit {
             this.username = profile?.fullName || user.displayName || '';
           });
         } else {
-          this.isAuthenticated = false;
+          // Kijelentkezéskor töröljük a localStorage-t is!
+          localStorage.removeItem('firebaseUser');
+          localStorage.removeItem('firebaseRole');
+          localStorage.removeItem('email');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('username');
+          this.email = '';
+          this.username = '';
+          this.userId = '';
+          this.avatarUrl = 'assets/default-avatar.png';
         }
       });
     } else {

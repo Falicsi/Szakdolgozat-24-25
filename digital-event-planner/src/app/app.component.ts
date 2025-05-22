@@ -12,7 +12,6 @@ import { CalendarComponent } from './calendar/calendar.component';
   imports: [
     RouterModule,
     CommonModule,
-    CalendarComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']

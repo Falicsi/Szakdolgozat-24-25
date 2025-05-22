@@ -14,7 +14,6 @@ import { ResourceEditDialogComponent } from '../resource-edit-dialog/resource-ed
     MatTableModule,
     MatButtonModule,
     MatDialogModule,
-    ResourceEditDialogComponent
   ],
   templateUrl: './resource-list.component.html',
   styleUrls: ['./resource-list.component.scss']

@@ -24,7 +24,7 @@ import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, CalendarModule, MatDialogModule, EventDialogComponent, EventDetailsDialogComponent, MatIcon],
+  imports: [CommonModule, CalendarModule, MatDialogModule, MatIcon],
   providers: [DatePipe],
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],

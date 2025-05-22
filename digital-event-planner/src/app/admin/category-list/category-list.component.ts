@@ -14,7 +14,6 @@ import { CategoryEditDialogComponent } from '../category-edit-dialog/category-ed
     MatTableModule,
     MatButtonModule,
     MatDialogModule,
-    CategoryEditDialogComponent
   ],
   templateUrl: './category-list.component.html',
   styleUrls: ['./category-list.component.scss']
